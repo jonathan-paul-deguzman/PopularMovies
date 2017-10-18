@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">PopularMovies</string>
+    <string name="tmdb_build_uri">Built URI: </string>
+</resources>
