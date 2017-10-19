@@ -12,10 +12,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
-/**
- * Created by jpdeguzman on 10/17/17.
- */
-
 public class NetworkHelper {
 
     private static final String TAG = NetworkHelper.class.getSimpleName();

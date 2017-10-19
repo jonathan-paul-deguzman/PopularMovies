@@ -1,4 +1,11 @@
 <resources>
+    <!-- General application string values -->
     <string name="app_name">PopularMovies</string>
+
+    <!-- The Movie Database string values -->
     <string name="tmdb_build_uri">Built URI: </string>
+
+    <!-- Menu string values -->
+    <string name="menu_sort_popular">Sort by popular movies</string>
+    <string name="menu_sort_top_rated">Sort by top rated</string>
 </resources>
