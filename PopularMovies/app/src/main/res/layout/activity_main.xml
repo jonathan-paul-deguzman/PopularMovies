@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     tools:context="com.example.jpdeguzman.popularmovies.MainActivity">
-    <!--<GridView android:id="@+id/gv_movie_posters"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
-        <!--<ImageView android:id="@+id/iv_popular_movie"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content" />-->
-    <!--</GridView>-->
-    <TextView
-        android:id="@+id/tv_display_movies"
+    <GridView
+        android:id="@+id/gv_movie_posters"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:verticalSpacing="0dp"
+        android:horizontalSpacing="0dp"
+        android:columnWidth="120dp"
+        android:stretchMode="columnWidth"
+        android:numColumns="auto_fit"
+        android:gravity="center">
+    </GridView>
 </FrameLayout>

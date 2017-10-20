@@ -7,6 +7,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class MovieModel {
 
+    @SerializedName("id")
+    private int movieId;
+
     @SerializedName("overview")
     private String movieOverview;
 
@@ -21,6 +24,22 @@ public class MovieModel {
 
     @SerializedName("release_date")
     private String movieReleaseDate;
+
+    /**
+     *
+     * @return movieId
+     */
+    public int getMovieId() {
+        return movieId;
+    }
+
+    /**
+     *
+     * @param movieId movie ID
+     */
+    public void setMovieId(int movieId) {
+        this.movieId = movieId;
+    }
 
     /**
      *
