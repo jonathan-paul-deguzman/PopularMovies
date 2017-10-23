@@ -1,11 +1,14 @@
 package com.example.jpdeguzman.popularmovies.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * POJO
  */
-public class MovieModel {
+public class MovieModel implements Parcelable {
 
     @SerializedName("id")
     private int movieId;
@@ -119,5 +122,47 @@ public class MovieModel {
      */
     public void setMovieReleaseDate(String movieReleaseDate) {
         this.movieReleaseDate = movieReleaseDate;
+    }
+
+    /**
+     * Constructor for re-constructing objects from a parcel
+     *
+     * @param in the parcel from which to read an object
+     */
+    public MovieModel(Parcel in) {
+        movieId = in.readInt();
+        movieOverview = in.readString();
+        moviePosterPath = in.readString();
+        movieTitle = in.readString();
+        movieUserRating = in.readString();
+        movieReleaseDate = in.readString();
+    }
+
+    public static final Parcelable.Creator<MovieModel> CREATOR
+            = new Parcelable.Creator<MovieModel>() {
+        @Override
+        public MovieModel createFromParcel(Parcel source) {
+            return new MovieModel(source);
+        }
+
+        @Override
+        public MovieModel[] newArray(int size) {
+            return new MovieModel[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(movieId);
+        dest.writeString(movieOverview);
+        dest.writeString(moviePosterPath);
+        dest.writeString(movieTitle);
+        dest.writeString(movieUserRating);
+        dest.writeString(movieReleaseDate);
     }
 }

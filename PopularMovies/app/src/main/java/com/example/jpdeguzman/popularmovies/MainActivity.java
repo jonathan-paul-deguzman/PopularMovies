@@ -1,22 +1,23 @@
 package com.example.jpdeguzman.popularmovies;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.example.jpdeguzman.popularmovies.Adapters.ImageAdapter;
+import com.example.jpdeguzman.popularmovies.Adapters.MovieAdapter;
 import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
 import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,14 +29,25 @@ public class MainActivity extends AppCompatActivity {
 
     private GridView mMoviePostersGridView;
 
-    private Map<Integer, MovieModel> mMovieHashMap = new HashMap<>();
-    private ArrayList<String> mMoviePosterPathList = new ArrayList<>();
+    private MovieModel mMovieResultSelected;
+
+    private ArrayList<MovieModel> mMovieResultsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mMoviePostersGridView = (GridView) findViewById(R.id.gv_movie_posters);
+        mMoviePostersGridView = findViewById(R.id.gv_movie_posters);
+        mMoviePostersGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, parent.getItemAtPosition(position).toString());
+                mMovieResultSelected = (MovieModel) parent.getItemAtPosition(position);
+                Intent intent = new Intent(MainActivity.this, MovieDetailsActivity.class);
+                intent.putExtra(".MovieModel", mMovieResultSelected);
+                startActivity(intent);
+            }
+        });
         loadMoviesByType("popular");
     }
 
@@ -75,12 +87,8 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<MovieResultsModel> call, Response<MovieResultsModel> response) {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "loadMoviesByType:onResponse:isSuccessful");
-                    mMoviePosterPathList.clear();
-                    ArrayList<MovieModel> movieResultsList = response.body().getMovies();
-                    for (MovieModel movie : movieResultsList) {
-                        mMovieHashMap.put(movie.getMovieId(), movie);
-                        mMoviePosterPathList.add(movie.getMoviePosterPath());
-                    }
+                    mMovieResultsList.clear();
+                    mMovieResultsList = response.body().getMovies();
                     loadImagesIntoGridView();
                 } else {
                     Log.i(TAG, "loadMoviesByType:onResponse:isNotSuccessful:" + response.message());
@@ -95,9 +103,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadImagesIntoGridView() {
-        int displayWidth = getResources().getDisplayMetrics().widthPixels;
-        ImageAdapter imageAdapter = new ImageAdapter(this, mMoviePosterPathList);
-        mMoviePostersGridView.setColumnWidth(displayWidth / 2);
-        mMoviePostersGridView.setAdapter(imageAdapter);
+        MovieAdapter movieAdapter = new MovieAdapter(this, mMovieResultsList);
+        mMoviePostersGridView.setAdapter(movieAdapter);
     }
 }
