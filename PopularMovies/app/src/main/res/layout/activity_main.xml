@@ -2,9 +2,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_activity_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
     tools:context="com.example.jpdeguzman.popularmovies.MainActivity">
     <GridView
         android:id="@+id/gv_movie_posters"
@@ -17,4 +17,11 @@
         android:numColumns="2"
         android:gravity="center">
     </GridView>
+    <ProgressBar
+        android:id="@+id/pb_loading_indicator"
+        android:layout_height="42dp"
+        android:layout_width="42dp"
+        android:layout_gravity="center"
+        android:visibility="invisible">
+    </ProgressBar>
 </FrameLayout>

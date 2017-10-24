@@ -1,6 +1,10 @@
 package com.example.jpdeguzman.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import com.example.jpdeguzman.popularmovies.Adapters.MovieAdapter;
 import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
@@ -27,7 +32,11 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private static final String DEFAULT_MOVIE_TYPE = "popular";
+
     private GridView mMoviePostersGridView;
+
+    private ProgressBar mLoadingProgressBar;
 
     private MovieModel mMovieResultSelected;
 
@@ -37,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mLoadingProgressBar = findViewById(R.id.pb_loading_indicator);
         mMoviePostersGridView = findViewById(R.id.gv_movie_posters);
         mMoviePostersGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -47,7 +57,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        loadMoviesByType("popular");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loadMoviesByType(DEFAULT_MOVIE_TYPE);
     }
 
     @Override
@@ -71,7 +86,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Responsible for interacting with {@link MovieDetailsService} to retrieve movie data based on
+     * the movie type
+     *
+     * @param movieType either popular or top_rated as of right now
+     */
     private void loadMoviesByType(String movieType) {
+        mLoadingProgressBar.setVisibility(View.VISIBLE);
         MovieDetailsService movieDetails = MovieClient.getMovieDetailsService();
 
         Call<MovieResultsModel> movieResults = null;
@@ -86,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<MovieResultsModel> call, Response<MovieResultsModel> response) {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "loadMoviesByType:onResponse:isSuccessful");
+                    mLoadingProgressBar.setVisibility(View.INVISIBLE);
                     if (!mMovieResultsList.isEmpty()) {
                         mMovieResultsList.clear();
                     }
@@ -98,13 +121,48 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<MovieResultsModel> call, Throwable t) {
-                Log.i(TAG, "loadMoviesByType:onFailure");
+                if (!isNetworkAvailable()) {
+                    Log.i(TAG, "loadMoviesByType:onFailure:noNetworkConnection");
+                    showErrorMessageNoNetworkConnection();
+                }
             }
         });
     }
 
+    /**
+     * Responsible for using our custom movie adapter to store each MovieModel object's poster
+     * image in each index of the grid view
+     */
     private void loadImagesIntoGridView() {
         MovieAdapter movieAdapter = new MovieAdapter(this, mMovieResultsList);
         mMoviePostersGridView.setAdapter(movieAdapter);
+    }
+
+    /**
+     * Responsible for determining if the device is connected to a network
+     *
+     * @return boolean value true if connected, false otherwise
+     */
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
+    }
+
+    /**
+     * Responsible for prompting the user to connect to a network using a snackbar message
+     */
+    private void showErrorMessageNoNetworkConnection() {
+        View view = findViewById(R.id.main_activity_layout);
+        Snackbar.make(view, getResources().getString(R.string.error_no_network_connection),
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction("RETRY", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        loadMoviesByType(DEFAULT_MOVIE_TYPE);
+                    }
+                })
+                .show();
     }
 }

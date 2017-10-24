@@ -4,8 +4,14 @@
 
     <!-- The Movie Database string values -->
     <string name="tmdb_build_uri">Built URI: </string>
+    <string name="tmdb_image_base_url">http://image.tmdb.org/t/p/</string>
+    <string name="tmdb_image_recommended_size">w500</string>
 
     <!-- Menu string values -->
     <string name="menu_sort_popular">Sort by popular movies</string>
     <string name="menu_sort_top_rated">Sort by top rated</string>
+
+    <!-- Error messages -->
+    <string name="error_no_network_connection">
+        There is no network connection, please restart the app after connection is established</string>
 </resources>
