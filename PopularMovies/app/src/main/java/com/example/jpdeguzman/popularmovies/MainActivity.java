@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         mMoviePostersGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, parent.getItemAtPosition(position).toString());
                 mMovieResultSelected = (MovieModel) parent.getItemAtPosition(position);
                 Intent intent = new Intent(MainActivity.this, MovieDetailsActivity.class);
                 intent.putExtra(".MovieModel", mMovieResultSelected);
@@ -87,7 +86,9 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<MovieResultsModel> call, Response<MovieResultsModel> response) {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "loadMoviesByType:onResponse:isSuccessful");
-                    mMovieResultsList.clear();
+                    if (!mMovieResultsList.isEmpty()) {
+                        mMovieResultsList.clear();
+                    }
                     mMovieResultsList = response.body().getMovies();
                     loadImagesIntoGridView();
                 } else {
