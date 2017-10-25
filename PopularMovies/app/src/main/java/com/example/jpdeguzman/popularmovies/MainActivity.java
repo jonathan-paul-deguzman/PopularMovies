@@ -28,6 +28,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * MainActivity is responsible for creating the main screen that the user will see when the app
+ * first boots up. This screen comprises of a GridView of movie posters and selecting a poster
+ * will launch {@link MovieDetailsService} to display the corresponding movie details for the
+ * selected movie.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -103,30 +109,35 @@ public class MainActivity extends AppCompatActivity {
             movieResults = movieDetails.getTopRatedMovies(getResources().getString(R.string.api_key));
         }
 
-        movieResults.enqueue(new Callback<MovieResultsModel>() {
-            @Override
-            public void onResponse(Call<MovieResultsModel> call, Response<MovieResultsModel> response) {
-                if (response.isSuccessful()) {
-                    Log.i(TAG, "loadMoviesByType:onResponse:isSuccessful");
-                    mLoadingProgressBar.setVisibility(View.INVISIBLE);
-                    if (!mMovieResultsList.isEmpty()) {
-                        mMovieResultsList.clear();
+        if (movieResults != null) {
+            movieResults.enqueue(new Callback<MovieResultsModel>() {
+                @Override
+                public void onResponse(Call<MovieResultsModel> call, Response<MovieResultsModel> response) {
+                    if (response.isSuccessful()) {
+                        Log.i(TAG, "loadMoviesByType:onResponse:isSuccessful");
+                        mLoadingProgressBar.setVisibility(View.INVISIBLE);
+                        if (!mMovieResultsList.isEmpty()) {
+                            mMovieResultsList.clear();
+                        }
+                        if (response.body() != null) {
+                            mMovieResultsList = response.body().getMovies();
+                            loadImagesIntoGridView();
+                        }
+                    } else {
+                        Log.i(TAG, "loadMoviesByType:onResponse:isNotSuccessful:" + response.message());
                     }
-                    mMovieResultsList = response.body().getMovies();
-                    loadImagesIntoGridView();
-                } else {
-                    Log.i(TAG, "loadMoviesByType:onResponse:isNotSuccessful:" + response.message());
                 }
-            }
 
-            @Override
-            public void onFailure(Call<MovieResultsModel> call, Throwable t) {
-                if (!isNetworkAvailable()) {
-                    Log.i(TAG, "loadMoviesByType:onFailure:noNetworkConnection");
-                    showErrorMessageNoNetworkConnection();
+                @Override
+                public void onFailure(Call<MovieResultsModel> call, Throwable t) {
+                    if (!isNetworkAvailable()) {
+                        Log.i(TAG, "loadMoviesByType:onFailure:noNetworkConnection");
+                        showErrorMessageNoNetworkConnection();
+                    }
                 }
-            }
-        });
+            });
+        }
+
     }
 
     /**

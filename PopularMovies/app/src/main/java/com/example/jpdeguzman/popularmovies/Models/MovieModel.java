@@ -6,7 +6,8 @@ import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * POJO
+ * MovieModel is a POJO class to represent a movie object. MovieModel is also responsible for using
+ * a Parcleable to get the movie object cross-activity.
  */
 public class MovieModel implements Parcelable {
 

@@ -8,6 +8,10 @@ import android.widget.TextView;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.squareup.picasso.Picasso;
 
+/**
+ * MovieDetailsActivity is responsible for displaying the corresponding movie information from the
+ * movie that was selected in {@link MainActivity}.
+ */
 public class MovieDetailsActivity extends AppCompatActivity {
 
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";

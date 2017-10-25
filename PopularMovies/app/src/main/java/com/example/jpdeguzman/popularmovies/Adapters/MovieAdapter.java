@@ -18,8 +18,8 @@ public class MovieAdapter extends ArrayAdapter {
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
     private static final String IMAGE_RECOMMENDED_SIZE = "w500";
 
-    private Context mContext;
-    private ArrayList<MovieModel> mMovieList;
+    private final Context mContext;
+    private final ArrayList<MovieModel> mMovieList;
 
     public MovieAdapter(Context context, ArrayList<MovieModel> movieList) {
         super(context, 0, movieList);
@@ -36,13 +36,14 @@ public class MovieAdapter extends ArrayAdapter {
                     .inflate(R.layout.movie_poster_item, parent, false);
         }
 
-        String moviePosterPath = currentMovie.getMoviePosterPath();
-        ImageView imageView = convertView.findViewById(R.id.iv_movie_poster);
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-        Picasso.with(mContext).setLoggingEnabled(true);
-        Picasso.with(mContext)
-                .load(IMAGE_BASE_URL + IMAGE_RECOMMENDED_SIZE + moviePosterPath)
-                .into(imageView);
+        if (currentMovie != null) {
+            String moviePosterPath = currentMovie.getMoviePosterPath();
+            ImageView imageView = convertView.findViewById(R.id.iv_movie_poster);
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            Picasso.with(mContext)
+                    .load(IMAGE_BASE_URL + IMAGE_RECOMMENDED_SIZE + moviePosterPath)
+                    .into(imageView);
+        }
 
         return convertView;
     }

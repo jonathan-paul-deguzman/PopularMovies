@@ -8,23 +8,23 @@ import retrofit2.http.Query;
 
 public interface MovieDetailsService {
     @GET("movie/popular")
-    public Call<MovieResultsModel> getPopularMovies(@Query("api_key") String userApiKey);
+    Call<MovieResultsModel> getPopularMovies(@Query("api_key") String userApiKey);
 
     @GET("movie/top_rated")
-    public Call<MovieResultsModel> getTopRatedMovies(@Query("api_key") String userApiKey);
+    Call<MovieResultsModel> getTopRatedMovies(@Query("api_key") String userApiKey);
 
     @GET("movie/{movie_id}/title")
-    public String getMovieTitle();
+    String getMovieTitle();
 
     @GET("movie/{movie_id}/poster_path")
-    public String getMoviePosterPath();
+    String getMoviePosterPath();
 
     @GET("movie/{movie_id}/overview")
-    public String getMovieOverview();
+    String getMovieOverview();
 
     @GET("movie/{movie_id}/vote_average")
-    public Double getMovieUserRating();
+    Double getMovieUserRating();
 
     @GET("movie/{movie_id}/release_date")
-    public String getMovieReleaseDate();
+    String getMovieReleaseDate();
 }
