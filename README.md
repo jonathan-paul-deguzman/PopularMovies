@@ -9,9 +9,12 @@ Follow these instructions to get a copy of this project running on your local ma
 ### Do you have your own API key?
 
 ```
-Note that any users attempting to build and run this application should include their own api key for The Movie DB. Api keys can be created here:
+Note that any users attempting to build and run this application should include their own api key for 
+The Movie DB. Api keys can be created here:
 
 [TMDB](https://www.themoviedb.org) - The Movie Database
+
+Once created, insert your key into SensitiveData.xml inside res->values.
 ```
 
 ## Authors
