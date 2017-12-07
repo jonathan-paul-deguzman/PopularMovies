@@ -2,11 +2,22 @@ package com.example.jpdeguzman.popularmovies;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
+import com.example.jpdeguzman.popularmovies.Models.VideoModel;
+import com.example.jpdeguzman.popularmovies.Models.VideoResultsModel;
+import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * MovieDetailsActivity is responsible for displaying the corresponding movie information from the
@@ -14,9 +25,13 @@ import com.squareup.picasso.Picasso;
  */
 public class MovieDetailsActivity extends AppCompatActivity {
 
+    private static final String TAG = MovieDetailsActivity.class.getSimpleName();
+
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
 
     private static final String IMAGE_RECOMMENDED_SIZE = "w500";
+
+    private static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
     private ImageView mMoviePosterImageView;
 
@@ -29,6 +44,10 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private TextView mMovieOverviewTextView;
 
     private MovieModel mMovieDetails;
+
+    private TextView mVideoNameTextView;
+
+    private ArrayList<VideoModel> mVideoResultsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +66,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        setUpMoviePage();
+        setupMoviePage();
+        setupMovieTrailers();
     }
 
-    private void setUpMoviePage() {
+    private void setupMoviePage() {
         String moviePosterPath = mMovieDetails.getMoviePosterPath();
         Picasso.with(this)
                 .load(IMAGE_BASE_URL + IMAGE_RECOMMENDED_SIZE + moviePosterPath)
@@ -59,5 +79,36 @@ public class MovieDetailsActivity extends AppCompatActivity {
         mMovieReleaseDateTextView.setText(mMovieDetails.getMovieReleaseDate());
         mMovieUserRatingTextView.setText(mMovieDetails.getMovieUserRating());
         mMovieOverviewTextView.setText(mMovieDetails.getMovieOverview());
+    }
+
+    private void setupMovieTrailers() {
+        MovieDetailsService movieDetails = MovieClient.getMovieDetailsService();
+        Call<VideoResultsModel> videoResults = movieDetails.getMovieVideos(mMovieDetails.getMovieId(),
+                getResources().getString(R.string.api_key));
+        if (videoResults != null) {
+            videoResults.enqueue(new Callback<VideoResultsModel>() {
+                @Override
+                public void onResponse(Call<VideoResultsModel> call, Response<VideoResultsModel> response) {
+                    if (response.isSuccessful()) {
+                        Log.i(TAG, "setupMovieTrailers:onResponse:isSuccessful");
+                        if (response.body() != null) {
+                            mVideoResultsList = response.body().getVideos();
+                            for (VideoModel video : mVideoResultsList) {
+                                Log.d(TAG, "Video key: " + video.getVideoKey());
+                                Log.d(TAG, "Video name: " + video.getVideoName());
+                                Log.d(TAG, "Video type: " + video.getVideoType());
+                            }
+                        }
+                    } else {
+                        Log.i(TAG, "setupMovieTrailers:onResponse:notSuccessful:" + response.message());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<VideoResultsModel> call, Throwable t) {
+                    Log.i(TAG, "setupMovieTrailers:onFailure");
+                }
+            });
+        }
     }
 }

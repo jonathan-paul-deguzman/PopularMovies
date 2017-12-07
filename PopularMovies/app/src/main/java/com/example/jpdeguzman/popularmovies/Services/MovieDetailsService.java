@@ -1,9 +1,11 @@
 package com.example.jpdeguzman.popularmovies.Services;
 
 import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
+import com.example.jpdeguzman.popularmovies.Models.VideoResultsModel;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface MovieDetailsService {
@@ -27,4 +29,7 @@ public interface MovieDetailsService {
 
     @GET("movie/{movie_id}/release_date")
     String getMovieReleaseDate();
+
+    @GET("movie/{movie_id}/videos")
+    Call<VideoResultsModel> getMovieVideos(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);
 }

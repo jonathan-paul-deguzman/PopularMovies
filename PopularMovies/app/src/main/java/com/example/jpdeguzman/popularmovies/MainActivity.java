@@ -115,6 +115,9 @@ public class MainActivity extends AppCompatActivity {
             movieResults = movieDetails.getTopRatedMovies(getResources().getString(R.string.api_key));
         }
 
+        /*
+         *  Asynchronously send network request for movie data and notify Callback of its response
+         */
         if (movieResults != null) {
             movieResults.enqueue(new Callback<MovieResultsModel>() {
                 @Override
@@ -143,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-
     }
 
     /**

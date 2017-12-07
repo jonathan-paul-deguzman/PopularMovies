@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 
 /**
- * MovieResultsModel is responsible for representing an ArrayList of MovieModel objects.
+ * Responsible for representing an ArrayList of Movie objects.
  */
 public class MovieResultsModel {
     @SerializedName("results")
