@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
+import com.example.jpdeguzman.popularmovies.Models.ReviewModel;
+import com.example.jpdeguzman.popularmovies.Models.ReviewResultsModel;
 import com.example.jpdeguzman.popularmovies.Models.VideoModel;
 import com.example.jpdeguzman.popularmovies.Models.VideoResultsModel;
 import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
@@ -49,6 +51,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private ArrayList<VideoModel> mVideoResultsList = new ArrayList<>();
 
+    private ArrayList<ReviewModel> mReviewResultsList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +72,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         super.onStart();
         setupMoviePage();
         setupMovieTrailers();
+        setupMovieReviews();
     }
 
     private void setupMoviePage() {
@@ -107,6 +112,36 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<VideoResultsModel> call, Throwable t) {
                     Log.i(TAG, "setupMovieTrailers:onFailure");
+                }
+            });
+        }
+    }
+
+    private void setupMovieReviews() {
+        MovieDetailsService movieDetails = MovieClient.getMovieDetailsService();
+        Call<ReviewResultsModel> reviewResults = movieDetails.getMovieReviews(mMovieDetails.getMovieId(),
+                getResources().getString(R.string.api_key));
+        if (reviewResults != null) {
+            reviewResults.enqueue(new Callback<ReviewResultsModel>() {
+                @Override
+                public void onResponse(Call<ReviewResultsModel> call, Response<ReviewResultsModel> response) {
+                    if (response.isSuccessful()) {
+                        Log.i(TAG, "setupMovieReviews:onResponse:isSuccessful");
+                        if (response.body() != null) {
+                            mReviewResultsList = response.body().getReviews();
+                            for (ReviewModel review : mReviewResultsList) {
+                                Log.d(TAG, "Review author: " + review.getReviewAuthor());
+                                Log.d(TAG, "Review content: " + review.getReviewContent());
+                            }
+                        }
+                    } else {
+                        Log.i(TAG, "setupMovieReviews:onResponse:notSuccessful: " + response.message());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ReviewResultsModel> call, Throwable t) {
+                    Log.i(TAG, "setupMovieReviews:onFailure");
                 }
             });
         }

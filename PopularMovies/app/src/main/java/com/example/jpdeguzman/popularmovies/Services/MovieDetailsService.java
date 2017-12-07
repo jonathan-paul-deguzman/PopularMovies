@@ -1,6 +1,7 @@
 package com.example.jpdeguzman.popularmovies.Services;
 
 import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
+import com.example.jpdeguzman.popularmovies.Models.ReviewResultsModel;
 import com.example.jpdeguzman.popularmovies.Models.VideoResultsModel;
 
 import retrofit2.Call;
@@ -14,6 +15,12 @@ public interface MovieDetailsService {
 
     @GET("movie/top_rated")
     Call<MovieResultsModel> getTopRatedMovies(@Query("api_key") String userApiKey);
+
+    @GET("movie/{movie_id}/videos")
+    Call<VideoResultsModel> getMovieVideos(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);
+
+    @GET("movie/{movie_id}/reviews")
+    Call<ReviewResultsModel> getMovieReviews(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);
 
     @GET("movie/{movie_id}/title")
     String getMovieTitle();
@@ -29,7 +36,4 @@ public interface MovieDetailsService {
 
     @GET("movie/{movie_id}/release_date")
     String getMovieReleaseDate();
-
-    @GET("movie/{movie_id}/videos")
-    Call<VideoResultsModel> getMovieVideos(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);
 }
