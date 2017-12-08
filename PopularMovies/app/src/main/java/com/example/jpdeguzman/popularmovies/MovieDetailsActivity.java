@@ -2,10 +2,13 @@ package com.example.jpdeguzman.popularmovies;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.jpdeguzman.popularmovies.Adapters.VideoAdapter;
 import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.Models.ReviewModel;
@@ -47,7 +50,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private MovieModel mMovieDetails;
 
-    private TextView mVideoNameTextView;
+    private RecyclerView mRecyclerView;
+
+    private VideoAdapter mVideoAdapter;
 
     private ArrayList<VideoModel> mVideoResultsList = new ArrayList<>();
 
@@ -70,6 +75,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         setupMoviePage();
         setupMovieTrailers();
         setupMovieReviews();
@@ -95,6 +101,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<VideoResultsModel> call, Response<VideoResultsModel> response) {
                     if (response.isSuccessful()) {
+                        Log.d("test", "got movie videos");
                         Log.i(TAG, "setupMovieTrailers:onResponse:isSuccessful");
                         if (response.body() != null) {
                             mVideoResultsList = response.body().getVideos();
@@ -103,6 +110,16 @@ public class MovieDetailsActivity extends AppCompatActivity {
                                 Log.d(TAG, "Video name: " + video.getVideoName());
                                 Log.d(TAG, "Video type: " + video.getVideoType());
                             }
+//                            mRecyclerView = findViewById(R.id.rv_movie_videos_and_reviews);
+//                            //mRecyclerView.setHasFixedSize(true);
+//
+//                            mVideoAdapter = new VideoAdapter(mVideoResultsList);
+//                            Log.d("test", "create adapter");
+//                            mRecyclerView.setAdapter(mVideoAdapter);
+//
+//                            LinearLayoutManager layoutManager = new LinearLayoutManager(
+//                                    getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+//                            mRecyclerView.setLayoutManager(layoutManager);
                         }
                     } else {
                         Log.i(TAG, "setupMovieTrailers:onResponse:notSuccessful:" + response.message());
