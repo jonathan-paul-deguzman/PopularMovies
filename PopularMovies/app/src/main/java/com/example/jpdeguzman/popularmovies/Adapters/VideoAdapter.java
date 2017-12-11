@@ -22,26 +22,22 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapter
     private ArrayList<VideoModel> mVideos;
 
     public VideoAdapter(ArrayList<VideoModel> videos) {
-        Log.d("VideoAdapter", "in constructor: " + videos.toString());
         mVideos = videos;
     }
 
     public VideoAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.d("VideoAdapter", "creating view holder");
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.movie_details_videos, parent);
+                .inflate(R.layout.movie_details_videos, parent, false);
         return new VideoAdapterViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(VideoAdapterViewHolder holder, int position) {
-        Log.d("VideoAdapter", "Binding name to view holder: " + mVideos.get(position).getVideoName());
         holder.videoNameTextView.setText(mVideos.get(position).getVideoName());
     }
 
     @Override
     public int getItemCount() {
-        Log.d("VideoAdapter", "data set size: " + mVideos.size());
         return mVideos.size();
     }
 

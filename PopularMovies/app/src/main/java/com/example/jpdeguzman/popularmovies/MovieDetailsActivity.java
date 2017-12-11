@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.jpdeguzman.popularmovies.Adapters.VideoAdapter;
@@ -48,13 +50,13 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private TextView mMovieOverviewTextView;
 
+    private ListView mMovieTrailersListView;
+
     private MovieModel mMovieDetails;
 
-    private RecyclerView mRecyclerView;
-
-    private VideoAdapter mVideoAdapter;
-
     private ArrayList<VideoModel> mVideoResultsList = new ArrayList<>();
+
+    private ArrayList<String> mVideoNamesList = new ArrayList<>();
 
     private ArrayList<ReviewModel> mReviewResultsList = new ArrayList<>();
 
@@ -70,12 +72,12 @@ public class MovieDetailsActivity extends AppCompatActivity {
         mMovieReleaseDateTextView = findViewById(R.id.tv_movie_release_date);
         mMovieUserRatingTextView = findViewById(R.id.tv_movie_user_rating);
         mMovieOverviewTextView = findViewById(R.id.tv_movie_overview);
+        mMovieTrailersListView = findViewById(R.id.lv_movie_trailers);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
         setupMoviePage();
         setupMovieTrailers();
         setupMovieReviews();
@@ -106,20 +108,16 @@ public class MovieDetailsActivity extends AppCompatActivity {
                         if (response.body() != null) {
                             mVideoResultsList = response.body().getVideos();
                             for (VideoModel video : mVideoResultsList) {
-                                Log.d(TAG, "Video key: " + video.getVideoKey());
-                                Log.d(TAG, "Video name: " + video.getVideoName());
-                                Log.d(TAG, "Video type: " + video.getVideoType());
+                                mVideoNamesList.add(video.getVideoName());
                             }
-//                            mRecyclerView = findViewById(R.id.rv_movie_videos_and_reviews);
-//                            //mRecyclerView.setHasFixedSize(true);
-//
-//                            mVideoAdapter = new VideoAdapter(mVideoResultsList);
-//                            Log.d("test", "create adapter");
-//                            mRecyclerView.setAdapter(mVideoAdapter);
-//
-//                            LinearLayoutManager layoutManager = new LinearLayoutManager(
-//                                    getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-//                            mRecyclerView.setLayoutManager(layoutManager);
+                            if (mVideoResultsList != null && mVideoNamesList != null) {
+                                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                                        getApplicationContext(),
+                                        android.R.layout.simple_list_item_1,
+                                        mVideoNamesList
+                                );
+                                mMovieTrailersListView.setAdapter(adapter);
+                            }
                         }
                     } else {
                         Log.i(TAG, "setupMovieTrailers:onResponse:notSuccessful:" + response.message());

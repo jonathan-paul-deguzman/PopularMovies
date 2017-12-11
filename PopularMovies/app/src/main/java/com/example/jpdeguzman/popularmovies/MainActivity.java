@@ -7,13 +7,13 @@ import android.net.NetworkInfo;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 
 import com.example.jpdeguzman.popularmovies.Adapters.MovieAdapter;
@@ -34,17 +34,19 @@ import retrofit2.Response;
  * will launch {@link MovieDetailsService} to display the corresponding movie details for the
  * selected movie.
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String DEFAULT_MOVIE_TYPE = "popular";
 
-    private GridView mMoviePostersGridView;
+    private static final int DEFAULT_NUMBER_OF_COLUMNS = 2;
 
     private ProgressBar mLoadingProgressBar;
 
     private MovieModel mMovieResultSelected;
+
+    private RecyclerView mMoviePosterRecyclerView;
 
     private ArrayList<MovieModel> mMovieResultsList = new ArrayList<>();
 
@@ -53,16 +55,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mLoadingProgressBar = findViewById(R.id.pb_loading_indicator);
-        mMoviePostersGridView = findViewById(R.id.gv_movie_posters);
-        mMoviePostersGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mMovieResultSelected = (MovieModel) parent.getItemAtPosition(position);
-                Intent intent = new Intent(MainActivity.this, MovieDetailsActivity.class);
-                intent.putExtra(".MovieModel", mMovieResultSelected);
-                startActivity(intent);
-            }
-        });
+        mMoviePosterRecyclerView = findViewById(R.id.rv_movie_posters);
     }
 
     @Override
@@ -130,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         if (response.body() != null) {
                             mMovieResultsList = response.body().getMovies();
-                            loadImagesIntoGridView();
+                            loadMoviePostersIntoRecyclerView();
                         }
                     } else {
                         Log.i(TAG, "loadMoviesByType:onResponse:isNotSuccessful:" + response.message());
@@ -149,12 +142,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Override OnItemClick from MovieAdapterOnClickHandler defined in MovieAdapter
+     *
+     * @param position the item that was selected from the recycler view
+     */
+    @Override
+    public void OnItemClick(int position) {
+        mMovieResultSelected = mMovieResultsList.get(position);
+        Intent launchMovieDetailsIntent = new Intent(MainActivity.this, MovieDetailsActivity.class);
+        launchMovieDetailsIntent.putExtra(".MovieModel", mMovieResultSelected);
+        startActivity(launchMovieDetailsIntent);
+    }
+
+    /**
      * Responsible for using our custom movie adapter to store each MovieModel object's poster
      * image in each index of the grid view
      */
-    private void loadImagesIntoGridView() {
-        MovieAdapter movieAdapter = new MovieAdapter(this, mMovieResultsList);
-        mMoviePostersGridView.setAdapter(movieAdapter);
+    private void loadMoviePostersIntoRecyclerView() {
+        mMoviePosterRecyclerView.setHasFixedSize(true);
+
+        MovieAdapter movieAdapter = new MovieAdapter(this, this, mMovieResultsList);
+        mMoviePosterRecyclerView.setAdapter(movieAdapter);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, DEFAULT_NUMBER_OF_COLUMNS);
+        mMoviePosterRecyclerView.setLayoutManager(gridLayoutManager);
     }
 
     /**

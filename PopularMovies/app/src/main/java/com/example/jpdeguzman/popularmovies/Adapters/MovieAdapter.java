@@ -1,10 +1,10 @@
 package com.example.jpdeguzman.popularmovies.Adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
@@ -13,7 +13,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class MovieAdapter extends ArrayAdapter {
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
     private static final String IMAGE_RECOMMENDED_SIZE = "w500";
@@ -21,45 +21,74 @@ public class MovieAdapter extends ArrayAdapter {
     private final Context mContext;
     private final ArrayList<MovieModel> mMovieList;
 
-    public MovieAdapter(Context context, ArrayList<MovieModel> movieList) {
-        super(context, 0, movieList);
+    private MovieAdapterOnClickHandler mClickListener;
+
+    public interface MovieAdapterOnClickHandler {
+        void OnItemClick(int position);
+    }
+
+    public MovieAdapter(Context context, MovieAdapterOnClickHandler listener, ArrayList<MovieModel> movieList) {
         mContext = context;
+        mClickListener = listener;
         mMovieList = movieList;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        final MovieModel currentMovie = (MovieModel) getItem(position);
+    public MovieAdapter.MovieAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.movie_poster_item, parent, false);
+        return new MovieAdapterViewHolder(view);
+    }
 
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext())
-                    .inflate(R.layout.movie_poster_item, parent, false);
-        }
-
+    @Override
+    public void onBindViewHolder(MovieAdapter.MovieAdapterViewHolder holder, final int position) {
+        final MovieModel currentMovie = mMovieList.get(position);
         if (currentMovie != null) {
             String moviePosterPath = currentMovie.getMoviePosterPath();
-            ImageView imageView = convertView.findViewById(R.id.iv_movie_poster);
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             Picasso.with(mContext)
                     .load(IMAGE_BASE_URL + IMAGE_RECOMMENDED_SIZE + moviePosterPath)
-                    .into(imageView);
+                    .into(holder.moviePosterImageView);
         }
 
-        return convertView;
-    }
-
-    @Override
-    public int getCount() {
-        return mMovieList.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return mMovieList.get(position);
+        holder.moviePosterImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mClickListener.OnItemClick(position);
+            }
+        });
     }
 
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    @Override
+    public int getItemCount() {
+        return mMovieList.size();
+    }
+
+    public void setOnClick(MovieAdapterOnClickHandler clickListener) {
+        mClickListener = clickListener;
+    }
+
+    class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
+
+        public ImageView moviePosterImageView;
+
+        public MovieAdapterViewHolder(View itemView) {
+            super(itemView);
+            moviePosterImageView = itemView.findViewById(R.id.iv_movie_poster);
+            //itemView.setOnClickListener(this);
+        }
+
+//        @Override
+//        public void onClick(View view) {
+//            view.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//
+//                }
+//            });
+//        }
     }
 }
