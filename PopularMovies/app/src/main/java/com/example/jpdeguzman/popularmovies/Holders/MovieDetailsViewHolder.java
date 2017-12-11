@@ -5,7 +5,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.R;
+
+import java.util.ArrayList;
 
 /**
  * View Holder for movie details
@@ -70,5 +73,9 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder {
 
     public void setMovieOverviewTextView(TextView mMovieOverviewTextView) {
         this.movieOverviewTextView = mMovieOverviewTextView;
+    }
+
+    public static void configureMovieInformationViewHolder(
+            MovieDetailsViewHolder holder, ArrayList<MovieModel> movieModelArrayList) {
     }
 }

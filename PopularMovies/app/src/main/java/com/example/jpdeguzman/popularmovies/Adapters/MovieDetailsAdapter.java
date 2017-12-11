@@ -2,6 +2,7 @@ package com.example.jpdeguzman.popularmovies.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,24 +28,31 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private static final String IMAGE_RECOMMENDED_SIZE = "w500";
 
-    private ArrayList<?> movieItem;
-
-    private final Context context;
-
     private static final int MOVIE_DETAILS_ID = 0;
 
     private static final int MOVIE_VIDEOS_ID = 1;
 
     private static final int MOVIE_REVIEWS_ID = 2;
 
-    public MovieDetailsAdapter(Context context, ArrayList<?> movieItem) {
+    private ArrayList<MovieModel> detailItemList;
+
+    private ArrayList<VideoModel> videoItemList;
+
+    private ArrayList<ReviewModel> reviewItemList;
+
+    private final Context context;
+
+    public MovieDetailsAdapter(Context context, ArrayList<MovieModel> detailItemList,
+                               ArrayList<VideoModel> videoItemList, ArrayList<ReviewModel> reviewItemList) {
         this.context = context;
-        this.movieItem = movieItem;
+        this.detailItemList = detailItemList;
+        this.videoItemList = videoItemList;
+        this.reviewItemList = reviewItemList;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerView.ViewHolder viewHolder;
+        RecyclerView.ViewHolder viewHolder = null;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         switch (viewType) {
@@ -60,10 +68,6 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 View reviewsView = inflater.inflate(R.layout.movie_details_reviews, parent, false);
                 viewHolder = new MovieReviewsViewHolder(reviewsView);
                 break;
-            default:
-                View newView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
-                viewHolder = new MovieDetailsViewHolder(newView);
-                break;
         }
 
         return viewHolder;
@@ -78,36 +82,36 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 break;
             case MOVIE_VIDEOS_ID:
                 MovieVideosViewHolder movieVideosViewHolder = (MovieVideosViewHolder) holder;
-                configureVideosViewHolder(movieVideosViewHolder, position);
+                configureVideosViewHolder(movieVideosViewHolder, position - detailItemList.size());
                 break;
             case MOVIE_REVIEWS_ID:
                 MovieReviewsViewHolder movieReviewsViewHolder = (MovieReviewsViewHolder) holder;
-                configureReviewsViewHolder(movieReviewsViewHolder, position);
-                break;
-            default:
+                configureReviewsViewHolder(movieReviewsViewHolder, position -
+                        detailItemList.size() - videoItemList.size());
                 break;
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (movieItem.get(position) instanceof MovieModel) {
+        if (position == 0) {
+            Log.d("MovieDetailsActivity", "inside movie details id assign");
             return MOVIE_DETAILS_ID;
-        } else if (movieItem.get(position) instanceof VideoModel) {
+        } else if (position <= videoItemList.size()) {
+            Log.d("MovieDetailsActivity", "inside movie videos id assign");
             return MOVIE_VIDEOS_ID;
-        } else if (movieItem.get(position) instanceof ReviewModel) {
+        } else {
             return MOVIE_REVIEWS_ID;
         }
-        return -1;
     }
 
     @Override
     public int getItemCount() {
-        return this.movieItem.size();
+        return detailItemList.size() + videoItemList.size() + reviewItemList.size();
     }
 
     private void configureDetailsViewHolder(MovieDetailsViewHolder detailsHolder, int position) {
-        MovieModel movieDetails = (MovieModel) movieItem.get(position);
+        MovieModel movieDetails = detailItemList.get(position);
         if (movieDetails != null) {
             String moviePosterPath = movieDetails.getMoviePosterPath();
             Picasso.with(context)
@@ -121,14 +125,14 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private void configureVideosViewHolder(MovieVideosViewHolder videosHolder, int position) {
-        VideoModel video = (VideoModel) movieItem.get(position);
+        VideoModel video = videoItemList.get(position);
         if (video != null) {
             videosHolder.getVideoNameTextView().setText(video.getVideoName());
         }
     }
 
     private void configureReviewsViewHolder(MovieReviewsViewHolder reviewsHolder, int position) {
-        ReviewModel review = (ReviewModel) movieItem.get(position);
+        ReviewModel review = reviewItemList.get(position);
         if (review != null) {
             reviewsHolder.getReviewAuthorTextView().setText(review.getReviewAuthor());
             reviewsHolder.getReviewContentTextView().setText(review.getReviewContent());
