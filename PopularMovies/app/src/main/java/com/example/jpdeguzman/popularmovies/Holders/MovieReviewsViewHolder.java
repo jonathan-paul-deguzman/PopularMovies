@@ -4,7 +4,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.jpdeguzman.popularmovies.Models.ReviewModel;
 import com.example.jpdeguzman.popularmovies.R;
+
+import java.util.ArrayList;
 
 /**
  * View Holder for movie reviews
@@ -22,19 +25,12 @@ public class MovieReviewsViewHolder extends RecyclerView.ViewHolder {
         reviewContentTextView = itemView.findViewById(R.id.tv_review_content);
     }
 
-    public TextView getReviewAuthorTextView() {
-        return reviewAuthorTextView;
-    }
-
-    public void setReviewAuthorTextView(TextView mReviewAuthorTextView) {
-        this.reviewAuthorTextView = mReviewAuthorTextView;
-    }
-
-    public TextView getReviewContentTextView() {
-        return reviewContentTextView;
-    }
-
-    public void setReviewContentTextView(TextView mReviewContentTextView) {
-        this.reviewContentTextView = mReviewContentTextView;
+    public void configureReviewsViewHolder(
+            MovieReviewsViewHolder reviewsHolder, ArrayList<ReviewModel> reviewItemList, int position) {
+        ReviewModel review = reviewItemList.get(position);
+        if (review != null) {
+            reviewsHolder.reviewAuthorTextView.setText(review.getReviewAuthor());
+            reviewsHolder.reviewContentTextView.setText(review.getReviewContent());
+        }
     }
 }
