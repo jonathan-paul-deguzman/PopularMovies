@@ -2,6 +2,8 @@ package com.example.jpdeguzman.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.design.widget.Snackbar;
@@ -18,6 +20,8 @@ import android.widget.ProgressBar;
 
 import com.example.jpdeguzman.popularmovies.Adapters.MovieAdapter;
 import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
+import com.example.jpdeguzman.popularmovies.Data.FavoriteMovieDbHelper;
+import com.example.jpdeguzman.popularmovies.Data.FavoriteMoviesContract;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
 import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
@@ -42,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final int DEFAULT_NUMBER_OF_COLUMNS = 2;
 
+    private SQLiteDatabase mDb;
+
     private ProgressBar mLoadingProgressBar;
 
     private MovieModel mMovieResultSelected;
@@ -56,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         setContentView(R.layout.activity_main);
         mLoadingProgressBar = findViewById(R.id.pb_loading_indicator);
         mMoviePosterRecyclerView = findViewById(R.id.rv_movie_posters);
+        FavoriteMovieDbHelper dbHelper = new FavoriteMovieDbHelper(this);
+        mDb = dbHelper.getReadableDatabase();
     }
 
     @Override
@@ -85,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 return true;
             case R.id.menu_sort_by_top_rated:
                 loadMoviesByType("top_rated");
+                return true;
+            case R.id.menu_sort_by_favorites:
+                Cursor cursor = getAllFavoriteMovies();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -194,5 +205,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     }
                 })
                 .show();
+    }
+
+    private Cursor getAllFavoriteMovies() {
+        return mDb.query(
+                FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                new String[]{FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH},
+                null,
+                null,
+                null,
+                null,
+                FavoriteMoviesContract.FavoriteMovieEntry._ID
+        );
     }
 }

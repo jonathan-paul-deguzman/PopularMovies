@@ -1,6 +1,7 @@
 package com.example.jpdeguzman.popularmovies.Adapters;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +17,12 @@ import java.util.ArrayList;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
+
     private static final String IMAGE_RECOMMENDED_SIZE = "w500";
 
-    private final Context mContext;
-    private final ArrayList<MovieModel> mMovieList;
+    private  Context mContext;
+
+    private  ArrayList<MovieModel> mMovieList;
 
     private MovieAdapterOnClickHandler mClickListener;
 

@@ -5,12 +5,13 @@
     <!-- Movie details values-->
     <string name="details_release_date">Release Date:</string>
     <string name="details_user_rating">User Rating:</string>
-    <string name="details_is_not_favorite">MARK AS FAVORITE</string>
-    <string name="details_is_favorite">FAVORITE</string>
+    <string name="details_make_favorite">FAVORITE</string>
+    <string name="details_remove_favorite">UN-FAVORITE</string>
 
     <!-- Menu string values -->
     <string name="menu_sort_popular">Sort by popular movies</string>
     <string name="menu_sort_top_rated">Sort by top rated</string>
+    <string name="menu_sort_favorites">Sort by user\'s favorites</string>
 
     <!-- Error messages -->
     <string name="error_no_network_connection">
