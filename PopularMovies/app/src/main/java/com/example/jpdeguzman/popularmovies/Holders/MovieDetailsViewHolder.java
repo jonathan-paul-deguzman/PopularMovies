@@ -62,7 +62,6 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
 
     public void configureDetailsViewHolder(
             MovieDetailsViewHolder detailsHolder, ArrayList<MovieModel> detailItemList, int position) {
-
         mCurrentMovieDetails = detailItemList.get(position);
         if (mCurrentMovieDetails != null) {
             String moviePosterPath = mCurrentMovieDetails.getMoviePosterPath();
@@ -84,6 +83,7 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
             addNewFavoriteMovie(mCurrentMovieDetails);
             markMovieAsFavoriteButton.setText(context.getString(R.string.details_remove_favorite));
         } else {
+            removeFavoriteMovie(mCurrentMovieDetails);
             markMovieAsFavoriteButton.setText(context.getString(R.string.details_make_favorite));
         }
     }
@@ -103,5 +103,11 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
         contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_OVERVIEW,
                 favoriteMovie.getMovieOverview());
         return mDb.insert(FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME, null, contentValues);
+    }
+
+    private boolean removeFavoriteMovie(MovieModel favoriteMovie) {
+        return mDb.delete(FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID + "=" +
+                        favoriteMovie.getMovieId(), null) > 0;
     }
 }
