@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.example.jpdeguzman.popularmovies.Adapters.FavoriteMovieAdapter;
 import com.example.jpdeguzman.popularmovies.Adapters.MovieAdapter;
 import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
 import com.example.jpdeguzman.popularmovies.Data.FavoriteMovieDbHelper;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         setContentView(R.layout.activity_main);
         mLoadingProgressBar = findViewById(R.id.pb_loading_indicator);
         mMoviePosterRecyclerView = findViewById(R.id.rv_movie_posters);
+        mMoviePosterRecyclerView.setHasFixedSize(true);
         FavoriteMovieDbHelper dbHelper = new FavoriteMovieDbHelper(this);
         mDb = dbHelper.getReadableDatabase();
     }
@@ -95,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 loadMoviesByType("top_rated");
                 return true;
             case R.id.menu_sort_by_favorites:
-                Cursor cursor = getAllFavoriteMovies();
+                loadMoviePostersFromFavorites();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -170,10 +172,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
      * image in each index of the grid view
      */
     private void loadMoviePostersIntoRecyclerView() {
-        mMoviePosterRecyclerView.setHasFixedSize(true);
-
         MovieAdapter movieAdapter = new MovieAdapter(this, this, mMovieResultsList);
         mMoviePosterRecyclerView.setAdapter(movieAdapter);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, DEFAULT_NUMBER_OF_COLUMNS);
+        mMoviePosterRecyclerView.setLayoutManager(gridLayoutManager);
+    }
+
+    private void loadMoviePostersFromFavorites() {
+        FavoriteMovieAdapter favoriteMovieAdapter = new FavoriteMovieAdapter(this, getAllFavoriteMovies());
+        mMoviePosterRecyclerView.setAdapter(favoriteMovieAdapter);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, DEFAULT_NUMBER_OF_COLUMNS);
         mMoviePosterRecyclerView.setLayoutManager(gridLayoutManager);
