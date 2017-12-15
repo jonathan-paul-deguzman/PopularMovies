@@ -1,5 +1,6 @@
 package com.example.jpdeguzman.popularmovies;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.util.Log;
 
 import com.example.jpdeguzman.popularmovies.Adapters.MovieDetailsAdapter;
 import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
+import com.example.jpdeguzman.popularmovies.Data.FavoriteMovieDbHelper;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.Models.ReviewModel;
 import com.example.jpdeguzman.popularmovies.Models.ReviewResultsModel;
@@ -46,7 +48,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movie_details);
         Bundle data = getIntent().getExtras();
         mMovieDetails = data.getParcelable(".MovieModel");
-
+        Log.d("test", "is favorite (activity)?" + mMovieDetails.getFavorite());
         mRecyclerViewMovieDetails = findViewById(R.id.rv_movie_details);
         mRecyclerViewMovieDetails.setLayoutManager(new LinearLayoutManager(this));
     }

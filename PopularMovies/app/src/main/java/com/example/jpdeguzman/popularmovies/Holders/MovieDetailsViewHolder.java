@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -74,6 +75,12 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
             detailsHolder.movieUserRatingTextView.setText(
                     context.getString(R.string.details_user_rating) + " " + mCurrentMovieDetails.getMovieUserRating());
             detailsHolder.movieOverviewTextView.setText(mCurrentMovieDetails.getMovieOverview());
+            Log.d("test", "is favorite? "  + mCurrentMovieDetails.getFavorite());
+            if (mCurrentMovieDetails.getFavorite()) {
+                markMovieAsFavoriteButton.setText(context.getString(R.string.details_remove_favorite));
+            } else {
+                markMovieAsFavoriteButton.setText(context.getString(R.string.details_make_favorite));
+            }
         }
     }
 

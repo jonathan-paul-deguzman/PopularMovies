@@ -29,6 +29,8 @@ public class MovieModel implements Parcelable {
     @SerializedName("release_date")
     private String movieReleaseDate;
 
+    private boolean isFavorite = false;
+
     /**
      *
      * @return movieId
@@ -125,6 +127,14 @@ public class MovieModel implements Parcelable {
         this.movieReleaseDate = movieReleaseDate;
     }
 
+    public boolean getFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
     /**
      * Constructor for re-constructing objects from a parcel
      *
@@ -137,6 +147,7 @@ public class MovieModel implements Parcelable {
         movieTitle = in.readString();
         movieUserRating = in.readString();
         movieReleaseDate = in.readString();
+        isFavorite = in.readByte() != 0;
     }
 
     public static final Parcelable.Creator<MovieModel> CREATOR
@@ -165,5 +176,6 @@ public class MovieModel implements Parcelable {
         dest.writeString(movieTitle);
         dest.writeString(movieUserRating);
         dest.writeString(movieReleaseDate);
+        dest.writeByte((byte) (isFavorite ? 1 : 0));
     }
 }

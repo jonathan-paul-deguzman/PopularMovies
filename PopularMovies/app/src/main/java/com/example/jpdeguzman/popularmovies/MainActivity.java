@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private SQLiteDatabase mDb;
 
+    private Cursor mCursor;
+
     private ProgressBar mLoadingProgressBar;
 
     private MovieModel mMovieResultSelected;
@@ -162,6 +164,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public void OnItemClick(int position) {
         mMovieResultSelected = mMovieResultsList.get(position);
+
+        mCursor = getMovieIdOfFavoriteMovies();
+        if (mCursor.moveToPosition(position)) { // this might be the problem
+            mMovieResultSelected.setFavorite(true);
+        } else {
+            mMovieResultSelected.setFavorite(false);
+        }
+
         Intent launchMovieDetailsIntent = new Intent(MainActivity.this, MovieDetailsActivity.class);
         launchMovieDetailsIntent.putExtra(".MovieModel", mMovieResultSelected);
         startActivity(launchMovieDetailsIntent);
@@ -219,6 +229,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         return mDb.query(
                 FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
                 new String[]{FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH},
+                null,
+                null,
+                null,
+                null,
+                FavoriteMoviesContract.FavoriteMovieEntry._ID
+        );
+    }
+
+    private Cursor getMovieIdOfFavoriteMovies() {
+        return mDb.query(
+                FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                new String[]{FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID},
                 null,
                 null,
                 null,
