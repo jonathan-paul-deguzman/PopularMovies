@@ -1,14 +1,19 @@
 package com.example.jpdeguzman.popularmovies.Holders;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.jpdeguzman.popularmovies.Models.VideoModel;
 import com.example.jpdeguzman.popularmovies.R;
+import com.squareup.picasso.Picasso;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -19,12 +24,22 @@ public class MovieVideosViewHolder extends RecyclerView.ViewHolder implements Vi
 
     private static final String YOUTUBE_BASE_URL = "http://www.youtube.com/watch?v=";
 
+    private static final String YOUTUBE_THUMBNAIL_BASE_URL = "http://img.youtube.com/vi/";
+
+    private static final String YOUTUBE_THUMBNAIL_END_URL = "/0.jpg";
+
+    private ImageView videoThumbnailImageView;
+
     private TextView videoNameTextView;
 
     private String videoKey;
 
-    public MovieVideosViewHolder(View itemView) {
+    private Context context;
+
+    public MovieVideosViewHolder(Context context, View itemView) {
         super(itemView);
+        this.context = context;
+        videoThumbnailImageView = itemView.findViewById(R.id.iv_video_thumbnail);
         videoNameTextView = itemView.findViewById(R.id.tv_video_name);
         itemView.setOnClickListener(this);
     }
@@ -33,6 +48,9 @@ public class MovieVideosViewHolder extends RecyclerView.ViewHolder implements Vi
             MovieVideosViewHolder videosHolder, ArrayList<VideoModel> videoItemList, int position) {
         VideoModel video = videoItemList.get(position);
         if (video != null) {
+            Picasso.with(context)
+                    .load(YOUTUBE_THUMBNAIL_BASE_URL + video.getVideoKey() + YOUTUBE_THUMBNAIL_END_URL)
+                    .into(videoThumbnailImageView);
             videosHolder.videoNameTextView.setText(video.getVideoName());
             videoKey = video.getVideoKey();
         }

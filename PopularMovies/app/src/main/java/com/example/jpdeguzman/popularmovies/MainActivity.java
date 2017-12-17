@@ -3,10 +3,12 @@ package com.example.jpdeguzman.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,7 +23,6 @@ import android.widget.ProgressBar;
 import com.example.jpdeguzman.popularmovies.Adapters.FavoriteMovieAdapter;
 import com.example.jpdeguzman.popularmovies.Adapters.MovieAdapter;
 import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
-import com.example.jpdeguzman.popularmovies.Data.FavoriteMovieDbHelper;
 import com.example.jpdeguzman.popularmovies.Data.FavoriteMoviesContract;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
@@ -39,7 +40,7 @@ import retrofit2.Response;
  * will launch {@link MovieDetailsService} to display the corresponding movie details for the
  * selected movie.
  */
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -47,9 +48,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final int DEFAULT_NUMBER_OF_COLUMNS = 2;
 
-    private SQLiteDatabase mDb;
-
-    private Cursor mCursor;
+    private static final int FAVORITE_LOADER_ID = 0;
 
     private ProgressBar mLoadingProgressBar;
 
@@ -57,7 +56,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private RecyclerView mMoviePosterRecyclerView;
 
+    private Cursor mCursor;
+
     private ArrayList<MovieModel> mMovieResultsList = new ArrayList<>();
+
+    private ArrayList<String> mFavoriteMoviesIdList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +69,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mLoadingProgressBar = findViewById(R.id.pb_loading_indicator);
         mMoviePosterRecyclerView = findViewById(R.id.rv_movie_posters);
         mMoviePosterRecyclerView.setHasFixedSize(true);
-        FavoriteMovieDbHelper dbHelper = new FavoriteMovieDbHelper(this);
-        mDb = dbHelper.getReadableDatabase();
+        getSupportLoaderManager().initLoader(FAVORITE_LOADER_ID, null, this);
     }
 
     @Override
@@ -99,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 loadMoviesByType("top_rated");
                 return true;
             case R.id.menu_sort_by_favorites:
-                loadMoviePostersFromFavorites();
+                loadFavoriteMoviesIntoRecyclerView();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -165,11 +167,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public void OnItemClick(int position) {
         mMovieResultSelected = mMovieResultsList.get(position);
 
-        mCursor = getMovieIdOfFavoriteMovies();
-        if (mCursor.moveToPosition(position)) { // this might be the problem
+        /*
+         *  Check the favorites database to see if the selected movie is a favorite movie
+         */
+        String movieId = Integer.toString(mMovieResultSelected.getMovieId());
+        if (mFavoriteMoviesIdList.contains(movieId)) {
             mMovieResultSelected.setFavorite(true);
-        } else {
-            mMovieResultSelected.setFavorite(false);
         }
 
         Intent launchMovieDetailsIntent = new Intent(MainActivity.this, MovieDetailsActivity.class);
@@ -184,17 +187,73 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private void loadMoviePostersIntoRecyclerView() {
         MovieAdapter movieAdapter = new MovieAdapter(this, this, mMovieResultsList);
         mMoviePosterRecyclerView.setAdapter(movieAdapter);
-
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, DEFAULT_NUMBER_OF_COLUMNS);
         mMoviePosterRecyclerView.setLayoutManager(gridLayoutManager);
     }
 
-    private void loadMoviePostersFromFavorites() {
-        FavoriteMovieAdapter favoriteMovieAdapter = new FavoriteMovieAdapter(this, getAllFavoriteMovies());
+    private void loadFavoriteMoviesIntoRecyclerView() {
+        FavoriteMovieAdapter favoriteMovieAdapter = new FavoriteMovieAdapter(this, mCursor);
         mMoviePosterRecyclerView.setAdapter(favoriteMovieAdapter);
-
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, DEFAULT_NUMBER_OF_COLUMNS);
         mMoviePosterRecyclerView.setLayoutManager(gridLayoutManager);
+    }
+
+    public Loader<Cursor> onCreateLoader(int id, final Bundle loaderArgs) {
+        return new AsyncTaskLoader<Cursor>(this) {
+
+            Cursor mFavoritesData = null;
+
+            @Override
+            protected void onStartLoading() {
+                if (mFavoritesData != null) {
+                    deliverResult(mFavoritesData);
+                } else {
+                    forceLoad();
+                }
+            }
+
+            @Override
+            public Cursor loadInBackground() {
+                try {
+                    return  getContentResolver().query(
+                            FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI,
+                            null,
+                            null,
+                            null,
+                            FavoriteMoviesContract.FavoriteMovieEntry._ID
+                    );
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to asynchronously load data");
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            /**
+             * Sends the result of the load to the registered listener
+             *
+             * @param data A cursor
+             */
+            public void deliverResult(Cursor data) {
+                mFavoritesData = data;
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mCursor = data;
+
+        for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
+            mFavoriteMoviesIdList.add(data.getString(
+                    data.getColumnIndex(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID)));
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 
     /**
@@ -223,29 +282,5 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     }
                 })
                 .show();
-    }
-
-    private Cursor getAllFavoriteMovies() {
-        return mDb.query(
-                FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
-                new String[]{FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH},
-                null,
-                null,
-                null,
-                null,
-                FavoriteMoviesContract.FavoriteMovieEntry._ID
-        );
-    }
-
-    private Cursor getMovieIdOfFavoriteMovies() {
-        return mDb.query(
-                FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
-                new String[]{FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID},
-                null,
-                null,
-                null,
-                null,
-                FavoriteMoviesContract.FavoriteMovieEntry._ID
-        );
     }
 }

@@ -65,9 +65,9 @@ public class FavoriteMovieContentProvider extends ContentProvider {
                  *  URI: content://<authority>/favorites/# where favorites is at position 0 and #
                  *  is at position 1.
                  */
-                String id = uri.getPathSegments().get(1);
-                String mSelection = "_id=?";
-                String[] mSelectionArgs = new String[]{id};
+                String movieId = uri.getPathSegments().get(1);
+                String mSelection = "movieId=?";
+                String[] mSelectionArgs = new String[]{movieId};
 
                 retCursor = db.query(
                         FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
@@ -134,9 +134,9 @@ public class FavoriteMovieContentProvider extends ContentProvider {
              *  Delete a single row with a particular id
              */
             case FAVORITES_WITH_ID:
-                String id = uri.getPathSegments().get(1);
-                String mSelection = "id=?";
-                String[] mSelectionArgs = new String[]{id};
+                String movieId = uri.getPathSegments().get(1);
+                String mSelection = "movieId=?";
+                String[] mSelectionArgs = new String[]{movieId};
 
                 rowsDeleted = db.delete(
                         FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,

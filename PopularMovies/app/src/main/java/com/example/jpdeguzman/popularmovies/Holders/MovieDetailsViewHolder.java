@@ -2,7 +2,7 @@ package com.example.jpdeguzman.popularmovies.Holders;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jpdeguzman.popularmovies.Data.FavoriteMovieDbHelper;
 import com.example.jpdeguzman.popularmovies.Data.FavoriteMoviesContract;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.R;
@@ -42,8 +41,6 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
 
     private final Context context;
 
-    private SQLiteDatabase mDb;
-
     private MovieModel mCurrentMovieDetails;
 
     public MovieDetailsViewHolder(Context context, View itemView) {
@@ -56,9 +53,6 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
         movieOverviewTextView = itemView.findViewById(R.id.tv_movie_overview);
         markMovieAsFavoriteButton = itemView.findViewById(R.id.button_mark_as_favorite);
         markMovieAsFavoriteButton.setOnClickListener(this);
-
-        FavoriteMovieDbHelper dbHelper = new FavoriteMovieDbHelper(context);
-        mDb = dbHelper.getWritableDatabase();
     }
 
     public void configureDetailsViewHolder(
@@ -75,7 +69,7 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
             detailsHolder.movieUserRatingTextView.setText(
                     context.getString(R.string.details_user_rating) + " " + mCurrentMovieDetails.getMovieUserRating());
             detailsHolder.movieOverviewTextView.setText(mCurrentMovieDetails.getMovieOverview());
-            Log.d("test", "is favorite? "  + mCurrentMovieDetails.getFavorite());
+
             if (mCurrentMovieDetails.getFavorite()) {
                 markMovieAsFavoriteButton.setText(context.getString(R.string.details_remove_favorite));
             } else {
@@ -87,7 +81,7 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
     @Override
     public void onClick(View v) {
         if (markMovieAsFavoriteButton.getText().equals(context.getString(R.string.details_make_favorite))) {
-            addNewFavoriteMovie(mCurrentMovieDetails);
+            insertFavoriteMovie(mCurrentMovieDetails);
             markMovieAsFavoriteButton.setText(context.getString(R.string.details_remove_favorite));
         } else {
             removeFavoriteMovie(mCurrentMovieDetails);
@@ -95,7 +89,7 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
         }
     }
 
-    private long addNewFavoriteMovie(MovieModel favoriteMovie) {
+    private void insertFavoriteMovie(MovieModel favoriteMovie) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID,
                 favoriteMovie.getMovieId());
@@ -109,12 +103,13 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
                 favoriteMovie.getMovieReleaseDate());
         contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_OVERVIEW,
                 favoriteMovie.getMovieOverview());
-        return mDb.insert(FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME, null, contentValues);
+        context.getContentResolver().insert(FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI,
+                contentValues);
     }
 
-    private boolean removeFavoriteMovie(MovieModel favoriteMovie) {
-        return mDb.delete(FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
-                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID + "=" +
-                        favoriteMovie.getMovieId(), null) > 0;
+    private void removeFavoriteMovie(MovieModel favoriteMovie) {
+        Uri uri = FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI;
+        uri = uri.buildUpon().appendPath(Integer.toString(favoriteMovie.getMovieId())).build();
+        context.getContentResolver().delete(uri, null, null);
     }
 }

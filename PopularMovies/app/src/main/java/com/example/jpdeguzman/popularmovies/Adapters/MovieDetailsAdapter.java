@@ -1,6 +1,7 @@
 package com.example.jpdeguzman.popularmovies.Adapters;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +53,7 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 break;
             case MOVIE_VIDEOS_ID:
                 View videosView = inflater.inflate(R.layout.movie_details_videos, parent, false);
-                viewHolder = new MovieVideosViewHolder(videosView);
+                viewHolder = new MovieVideosViewHolder(context, videosView);
                 break;
             case MOVIE_REVIEWS_ID:
                 View reviewsView = inflater.inflate(R.layout.movie_details_reviews, parent, false);
@@ -68,7 +69,8 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         switch (holder.getItemViewType()) {
             case MOVIE_DETAILS_ID:
                 MovieDetailsViewHolder movieDetailsViewHolder = (MovieDetailsViewHolder) holder;
-                movieDetailsViewHolder.configureDetailsViewHolder(movieDetailsViewHolder, detailItemList, position);
+                movieDetailsViewHolder.configureDetailsViewHolder(movieDetailsViewHolder,
+                        detailItemList, position);
                 break;
             case MOVIE_VIDEOS_ID:
                 MovieVideosViewHolder movieVideosViewHolder = (MovieVideosViewHolder) holder;
