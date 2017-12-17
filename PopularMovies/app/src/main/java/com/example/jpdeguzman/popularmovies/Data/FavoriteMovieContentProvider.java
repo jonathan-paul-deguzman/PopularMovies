@@ -124,13 +124,73 @@ public class FavoriteMovieContentProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        final SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
+
+        int match = sUriMatcher.match(uri);
+
+        int rowsDeleted;
+        switch (match) {
+            /*
+             *  Delete a single row with a particular id
+             */
+            case FAVORITES_WITH_ID:
+                String id = uri.getPathSegments().get(1);
+                String mSelection = "id=?";
+                String[] mSelectionArgs = new String[]{id};
+
+                rowsDeleted = db.delete(
+                        FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                        mSelection,
+                        mSelectionArgs
+                );
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri );
+        }
+
+        if (rowsDeleted != 0) {
+            /*
+             *  Set notification if a favorite movie was deleted
+             */
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return rowsDeleted;
     }
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values,
                       @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        final SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
+
+        int match = sUriMatcher.match(uri);
+
+        int favoritesUpdated;
+        switch (match) {
+            case FAVORITES_WITH_ID:
+                String id = uri.getPathSegments().get(1);
+                String mSelection = "id=?";
+                String[] mSelectionArgs = new String[]{id};
+
+                favoritesUpdated = db.update(
+                        FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                        values,
+                        mSelection,
+                        mSelectionArgs
+                );
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        if (favoritesUpdated != 0) {
+            /*
+             *  Set notification if a favorite movie was updated
+             */
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return favoritesUpdated;
     }
 
     @Nullable
