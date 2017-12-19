@@ -12,8 +12,6 @@ import com.example.jpdeguzman.popularmovies.Models.VideoModel;
 import com.example.jpdeguzman.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 /**

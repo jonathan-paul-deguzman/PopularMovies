@@ -27,6 +27,8 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
 
     private static final String IMAGE_RECOMMENDED_SIZE = "w500";
 
+    private ImageView movieBackdropImageView;
+
     private ImageView moviePosterImageView;
 
     private TextView movieTitleTextView;
@@ -46,6 +48,7 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
     public MovieDetailsViewHolder(Context context, View itemView) {
         super(itemView);
         this.context = context;
+        movieBackdropImageView = itemView.findViewById(R.id.iv_movie_backdrop);
         moviePosterImageView = itemView.findViewById(R.id.iv_movie_poster);
         movieTitleTextView = itemView.findViewById(R.id.tv_movie_title);
         movieReleaseDateTextView = itemView.findViewById(R.id.tv_movie_release_date);
@@ -59,6 +62,10 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
             MovieDetailsViewHolder detailsHolder, ArrayList<MovieModel> detailItemList, int position) {
         mCurrentMovieDetails = detailItemList.get(position);
         if (mCurrentMovieDetails != null) {
+            String movieBackdropPath = mCurrentMovieDetails.getMovieBackdropPath();
+            Picasso.with(context)
+                    .load(IMAGE_BASE_URL + IMAGE_RECOMMENDED_SIZE + movieBackdropPath)
+                    .into(movieBackdropImageView);
             String moviePosterPath = mCurrentMovieDetails.getMoviePosterPath();
             Picasso.with(context)
                     .load(IMAGE_BASE_URL + IMAGE_RECOMMENDED_SIZE + moviePosterPath)

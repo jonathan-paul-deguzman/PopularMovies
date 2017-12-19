@@ -51,6 +51,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
             mMovieDetails = savedInstanceState.getParcelable("currentMovie");
             mVideoResultsList = savedInstanceState.getParcelableArrayList("videoList");
             mReviewResultsList = savedInstanceState.getParcelableArrayList("reviewList");
+            setupMovieDetails();
+            bindDataToAdapter(mMovieDetailsList, mVideoResultsList, mReviewResultsList);
         } else {
             Bundle data = getIntent().getExtras();
             mMovieDetails = data.getParcelable(".MovieModel");
@@ -58,11 +60,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
             setupMovieVideos();
             setupMovieReviews();
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     @Override

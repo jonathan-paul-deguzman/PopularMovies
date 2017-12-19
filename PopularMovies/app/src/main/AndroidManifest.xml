@@ -20,7 +20,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".MovieDetailsActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="fullSensor">
         </activity>
         <provider
             android:authorities="com.example.jpdeguzman.popularmovies"

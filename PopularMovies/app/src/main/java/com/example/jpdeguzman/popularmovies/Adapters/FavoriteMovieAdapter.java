@@ -26,7 +26,14 @@ public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdap
 
     private Cursor mCursor;
 
-    public FavoriteMovieAdapter(Context context, Cursor cursor) {
+    private FavoriteMovieAdapterOnClickHandler mClickHandler;
+
+    public interface FavoriteMovieAdapterOnClickHandler {
+        void OnFavoriteItemClick(int position);
+    }
+
+    public FavoriteMovieAdapter(Context context, FavoriteMovieAdapterOnClickHandler clickHandler, Cursor cursor) {
+        mClickHandler = clickHandler;
         mContext = context;
         mCursor = cursor;
     }
@@ -38,7 +45,7 @@ public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdap
     }
 
     @Override
-    public void onBindViewHolder(FavoriteMovieAdapter.FavoriteMovieAdapterViewHolder holder, int position) {
+    public void onBindViewHolder(FavoriteMovieAdapter.FavoriteMovieAdapterViewHolder holder, final int position) {
         if (!mCursor.moveToPosition(position)) {
             return;
         }
@@ -48,6 +55,13 @@ public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdap
         Picasso.with(mContext)
                 .load(IMAGE_BASE_URL + IMAGE_RECOMMENDED_SIZE + moviePosterPath)
                 .into(holder.moviePosterImageView);
+
+        holder.moviePosterImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mClickHandler.OnFavoriteItemClick(position);
+            }
+        });
     }
 
     @Override

@@ -36,4 +36,7 @@ public interface MovieDetailsService {
 
     @GET("movie/{movie_id}/release_date")
     String getMovieReleaseDate();
+
+    @GET("movie/{movie_id}/backdrop_path")
+    String getMovieBackdropPath();
 }

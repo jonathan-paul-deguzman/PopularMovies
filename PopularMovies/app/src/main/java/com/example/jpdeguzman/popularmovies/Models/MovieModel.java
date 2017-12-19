@@ -29,6 +29,9 @@ public class MovieModel implements Parcelable {
     @SerializedName("release_date")
     private String movieReleaseDate;
 
+    @SerializedName("backdrop_path")
+    private String movieBackdropPath;
+
     private boolean isFavorite = false;
 
     /**
@@ -127,6 +130,14 @@ public class MovieModel implements Parcelable {
         this.movieReleaseDate = movieReleaseDate;
     }
 
+    public String getMovieBackdropPath() {
+        return movieBackdropPath;
+    }
+
+    public void setMovieBackdropPath(String movieBackdropPath) {
+        this.movieBackdropPath = movieBackdropPath;
+    }
+
     public boolean getFavorite() {
         return isFavorite;
     }
@@ -147,6 +158,7 @@ public class MovieModel implements Parcelable {
         movieTitle = in.readString();
         movieUserRating = in.readString();
         movieReleaseDate = in.readString();
+        movieBackdropPath = in.readString();
         isFavorite = in.readByte() != 0;
     }
 
@@ -176,6 +188,7 @@ public class MovieModel implements Parcelable {
         dest.writeString(movieTitle);
         dest.writeString(movieUserRating);
         dest.writeString(movieReleaseDate);
+        dest.writeString(movieBackdropPath);
         dest.writeByte((byte) (isFavorite ? 1 : 0));
     }
 }
