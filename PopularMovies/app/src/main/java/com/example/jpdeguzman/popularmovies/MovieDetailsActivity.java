@@ -79,11 +79,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<VideoResultsModel> call, Response<VideoResultsModel> response) {
                     if (response.isSuccessful()) {
-                        if (response.body() != null) {
-                            Log.i(TAG, "setupMovieTrailers:onResponse:isSuccessful");
-                            mVideoResultsList = response.body().getVideos();
+                        Log.i(TAG, "setupMovieTrailers:onResponse:isSuccessful");
+                        mVideoResultsList = response.body().getVideos();
+                        if (mVideoResultsList != null) {
                             isFinishedRequestingVideos = true;
-                            if (isFinishedRequestingVideos && isFinishedRequestingReviews) {
+                            if (isFinishedRequestingReviews) {
                                 bindDataToAdapter(mMovieDetailsList, mVideoResultsList, mReviewResultsList);
                             }
                         }
@@ -109,11 +109,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<ReviewResultsModel> call, Response<ReviewResultsModel> response) {
                     if (response.isSuccessful()) {
-                        if (response.body() != null) {
-                            Log.i(TAG, "setupMovieReviews:onResponse:isSuccessful");
-                            mReviewResultsList = response.body().getReviews();
+                        Log.i(TAG, "setupMovieReviews:onResponse:isSuccessful");
+                        mReviewResultsList = response.body().getReviews();
+                        if (mReviewResultsList != null) {
                             isFinishedRequestingReviews = true;
-                            if (isFinishedRequestingVideos && isFinishedRequestingReviews) {
+                            if (isFinishedRequestingVideos) {
                                 bindDataToAdapter(mMovieDetailsList, mVideoResultsList, mReviewResultsList);
                             }
                         }

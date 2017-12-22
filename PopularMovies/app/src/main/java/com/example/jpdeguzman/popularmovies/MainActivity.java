@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         setContentView(R.layout.activity_main);
         mLoadingProgressBar = findViewById(R.id.pb_loading_indicator);
         mMoviePosterRecyclerView = findViewById(R.id.rv_movie_posters);
-        //mMoviePosterRecyclerView.setHasFixedSize(true);
         getSupportLoaderManager().initLoader(FAVORITE_LOADER_ID, null, this);
 
         if (savedInstanceState != null) {
@@ -143,8 +142,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                         if (!mMovieResultsList.isEmpty()) {
                             mMovieResultsList.clear();
                         }
-                        if (response.body() != null) {
-                            mMovieResultsList = response.body().getMovies();
+                        mMovieResultsList = response.body().getMovies();
+                        if (mMovieResultsList != null) {
                             loadMoviePostersIntoRecyclerView();
                         }
                     } else {
@@ -189,10 +188,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         for (MovieModel movie : mMovieResultsList) {
             if (movieSelected.equals(Integer.toString(movie.getMovieId()))) {
                 favoriteMovieSelected = movie;
-                if (favoriteMovieSelected != null) {
-                    favoriteMovieSelected.setFavorite(true);
-                    launchMovieDetailsIntent(favoriteMovieSelected);
-                }
+                favoriteMovieSelected.setFavorite(true);
+                launchMovieDetailsIntent(favoriteMovieSelected);
             }
         }
     }

@@ -13,9 +13,8 @@ import com.example.jpdeguzman.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
 /**
- * Created by jpdeguzman on 12/12/17.
+ *  Adapter for creating the favorite movies layout
  */
-
 public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdapter.FavoriteMovieAdapterViewHolder> {
 
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";

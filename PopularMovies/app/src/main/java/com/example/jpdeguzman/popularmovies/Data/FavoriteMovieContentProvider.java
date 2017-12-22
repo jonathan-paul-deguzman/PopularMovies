@@ -16,9 +16,9 @@ import android.support.annotation.Nullable;
  */
 public class FavoriteMovieContentProvider extends ContentProvider {
 
-    private static final int FAVORITES = 100;
+    public static final int FAVORITES = 100;
 
-    private static final int FAVORITES_WITH_ID = 101;
+    public static final int FAVORITES_WITH_ID = 101;
 
     private FavoriteMovieDbHelper mMovieDbHelper;
 

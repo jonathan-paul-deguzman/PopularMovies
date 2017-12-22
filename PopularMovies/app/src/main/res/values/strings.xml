@@ -2,11 +2,16 @@
     <!-- General application string values -->
     <string name="app_name">PopularMovies</string>
 
-    <!-- Movie details values-->
+    <!-- Movie details values -->
     <string name="details_release_date">Release Date:</string>
     <string name="details_user_rating">User Rating:</string>
     <string name="details_make_favorite">FAVORITE</string>
     <string name="details_remove_favorite">UN-FAVORITE</string>
+
+    <!-- Image content descriptions -->
+    <string name="description_movie_poster">Movie poster</string>
+    <string name="description_movie_backdrop">Movie backdrop</string>
+    <string name="description_video_thumbnail">Video thumbnail</string>
 
     <!-- Menu string values -->
     <string name="menu_sort_popular">Sort by popular movies</string>

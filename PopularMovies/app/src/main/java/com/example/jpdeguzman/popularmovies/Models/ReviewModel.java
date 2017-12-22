@@ -12,10 +12,10 @@ import com.google.gson.annotations.SerializedName;
 public class ReviewModel implements Parcelable {
 
     @SerializedName("author")
-    String reviewAuthor;
+    private String reviewAuthor;
 
     @SerializedName("content")
-    String reviewContent;
+    private String reviewContent;
 
     public String getReviewAuthor() {
         return reviewAuthor;

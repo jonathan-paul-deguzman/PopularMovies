@@ -15,9 +15,9 @@ import java.util.ArrayList;
 
 public class MovieReviewsViewHolder extends RecyclerView.ViewHolder {
 
-    TextView reviewAuthorTextView;
+    private TextView reviewAuthorTextView;
 
-    TextView reviewContentTextView;
+    private TextView reviewContentTextView;
 
     public MovieReviewsViewHolder(View itemView) {
         super(itemView);

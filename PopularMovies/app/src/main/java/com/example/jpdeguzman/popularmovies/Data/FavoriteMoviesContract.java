@@ -4,9 +4,8 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
- * Created by jpdeguzman on 12/12/17.
+ * Contract for creating the favorites table and columns
  */
-
 public class FavoriteMoviesContract {
 
     public static final String SCHEME = "content://";

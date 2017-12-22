@@ -19,9 +19,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     private static final String IMAGE_RECOMMENDED_SIZE = "w500";
 
-    private  Context mContext;
+    private final Context mContext;
 
-    private  ArrayList<MovieModel> mMovieList;
+    private ArrayList<MovieModel> mMovieList;
 
     private MovieAdapterOnClickHandler mClickListener;
 

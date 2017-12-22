@@ -32,7 +32,7 @@ public class MovieVideosViewHolder extends RecyclerView.ViewHolder implements Vi
 
     private String videoKey;
 
-    private Context context;
+    private final Context context;
 
     public MovieVideosViewHolder(Context context, View itemView) {
         super(itemView);

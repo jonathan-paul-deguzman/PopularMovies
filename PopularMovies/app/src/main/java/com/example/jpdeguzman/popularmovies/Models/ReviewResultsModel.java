@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class ReviewResultsModel {
     @SerializedName("results")
-    ArrayList<ReviewModel> reviews = new ArrayList<>();
+    private ArrayList<ReviewModel> reviews = new ArrayList<>();
 
     public ArrayList<ReviewModel> getReviews() {
         return reviews;

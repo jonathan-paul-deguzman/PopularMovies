@@ -5,9 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * Created by jpdeguzman on 12/12/17.
+ *  Database helper to create the favorites db table
  */
-
 public class FavoriteMovieDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "favorites.db";
