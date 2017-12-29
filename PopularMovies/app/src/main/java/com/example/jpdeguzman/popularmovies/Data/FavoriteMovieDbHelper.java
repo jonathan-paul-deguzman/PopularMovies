@@ -11,7 +11,11 @@ public class FavoriteMovieDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "favorites.db";
 
-    private static final int DATABASE_VERSION = 1;
+    /**
+     * VERSION_1 initial database creation
+     * VERSION_2 added column COLUMN_MOVIE_BACKDROP_PATH
+     */
+    private static final int DATABASE_VERSION = 2;
 
     public FavoriteMovieDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -30,6 +34,7 @@ public class FavoriteMovieDbHelper extends SQLiteOpenHelper {
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " +
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH + " TEXT NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH + " TEXT NOT NULL, " +
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_USER_RATING + " TEXT NOT NULL, " +
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE + " TEXT NOT NULL, " +
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_OVERVIEW + " TEXT NOT NULL" + ");";
@@ -46,7 +51,7 @@ public class FavoriteMovieDbHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP IF TABLE EXISTS " + FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME);
         onCreate(db);
     }
 }

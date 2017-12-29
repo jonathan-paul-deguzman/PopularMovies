@@ -16,6 +16,9 @@ import com.example.jpdeguzman.popularmovies.R;
 
 import java.util.ArrayList;
 
+/**
+ *  Adapter for creating the movie details (information, videos, and reviews) layout
+ */
 public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int MOVIE_DETAILS_ID = 0;

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 /**
  * View Holder for movie details
  */
-
 public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
@@ -42,7 +41,7 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
 
     private final Context context;
 
-    private MovieModel mCurrentMovieDetails;
+    private MovieModel currentMovieDetails;
 
     public MovieDetailsViewHolder(Context context, View itemView) {
         super(itemView);
@@ -59,24 +58,24 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
 
     public void configureDetailsViewHolder(
             MovieDetailsViewHolder detailsHolder, ArrayList<MovieModel> detailItemList, int position) {
-        mCurrentMovieDetails = detailItemList.get(position);
-        if (mCurrentMovieDetails != null) {
-            String movieBackdropPath = mCurrentMovieDetails.getMovieBackdropPath();
+        currentMovieDetails = detailItemList.get(position);
+        if (currentMovieDetails != null) {
+            String movieBackdropPath = currentMovieDetails.getMovieBackdropPath();
             Picasso.with(context)
                     .load(IMAGE_BASE_URL + IMAGE_RECOMMENDED_SIZE + movieBackdropPath)
                     .into(movieBackdropImageView);
-            String moviePosterPath = mCurrentMovieDetails.getMoviePosterPath();
+            String moviePosterPath = currentMovieDetails.getMoviePosterPath();
             Picasso.with(context)
                     .load(IMAGE_BASE_URL + IMAGE_RECOMMENDED_SIZE + moviePosterPath)
                     .into(moviePosterImageView);
-            detailsHolder.movieTitleTextView.setText(mCurrentMovieDetails.getMovieTitle());
+            detailsHolder.movieTitleTextView.setText(currentMovieDetails.getMovieTitle());
             detailsHolder.movieReleaseDateTextView.setText(
-                    context.getString(R.string.details_release_date) + " " + mCurrentMovieDetails.getMovieReleaseDate());
+                    context.getString(R.string.details_release_date) + " " + currentMovieDetails.getMovieReleaseDate());
             detailsHolder.movieUserRatingTextView.setText(
-                    context.getString(R.string.details_user_rating) + " " + mCurrentMovieDetails.getMovieUserRating());
-            detailsHolder.movieOverviewTextView.setText(mCurrentMovieDetails.getMovieOverview());
+                    context.getString(R.string.details_user_rating) + " " + currentMovieDetails.getMovieUserRating());
+            detailsHolder.movieOverviewTextView.setText(currentMovieDetails.getMovieOverview());
 
-            if (mCurrentMovieDetails.getFavorite()) {
+            if (currentMovieDetails.getFavorite()) {
                 markMovieAsFavoriteButton.setText(context.getString(R.string.details_remove_favorite));
             } else {
                 markMovieAsFavoriteButton.setText(context.getString(R.string.details_make_favorite));
@@ -87,10 +86,10 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
     @Override
     public void onClick(View v) {
         if (markMovieAsFavoriteButton.getText().equals(context.getString(R.string.details_make_favorite))) {
-            insertFavoriteMovie(mCurrentMovieDetails);
+            insertFavoriteMovie(currentMovieDetails);
             markMovieAsFavoriteButton.setText(context.getString(R.string.details_remove_favorite));
         } else {
-            removeFavoriteMovie(mCurrentMovieDetails);
+            removeFavoriteMovie(currentMovieDetails);
             markMovieAsFavoriteButton.setText(context.getString(R.string.details_make_favorite));
         }
     }
@@ -101,6 +100,8 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
                 favoriteMovie.getMovieId());
         contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH,
                 favoriteMovie.getMoviePosterPath());
+        contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH,
+                favoriteMovie.getMovieBackdropPath());
         contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_TITLE,
                 favoriteMovie.getMovieTitle());
         contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_USER_RATING,

@@ -34,6 +34,65 @@ public class MovieModel implements Parcelable {
 
     private boolean isFavorite = false;
 
+    public MovieModel(int movieId, String movieOverview, String moviePosterPath, String movieTitle,
+                      String movieUserRating, String movieReleaseDate, String movieBackdropPath,
+                      boolean isFavorite) {
+        this.movieId = movieId;
+        this.movieOverview = movieOverview;
+        this.moviePosterPath = moviePosterPath;
+        this.movieTitle = movieTitle;
+        this.movieUserRating = movieUserRating;
+        this.movieReleaseDate = movieReleaseDate;
+        this.movieBackdropPath = movieBackdropPath;
+        this.isFavorite = isFavorite;
+    }
+
+    /**
+     * Constructor for re-constructing objects from a parcel
+     *
+     * @param in the parcel from which to read an object
+     */
+    public MovieModel(Parcel in) {
+        movieId = in.readInt();
+        movieOverview = in.readString();
+        moviePosterPath = in.readString();
+        movieTitle = in.readString();
+        movieUserRating = in.readString();
+        movieReleaseDate = in.readString();
+        movieBackdropPath = in.readString();
+        isFavorite = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<MovieModel> CREATOR
+            = new Parcelable.Creator<MovieModel>() {
+        @Override
+        public MovieModel createFromParcel(Parcel source) {
+            return new MovieModel(source);
+        }
+
+        @Override
+        public MovieModel[] newArray(int size) {
+            return new MovieModel[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(movieId);
+        dest.writeString(movieOverview);
+        dest.writeString(moviePosterPath);
+        dest.writeString(movieTitle);
+        dest.writeString(movieUserRating);
+        dest.writeString(movieReleaseDate);
+        dest.writeString(movieBackdropPath);
+        dest.writeByte((byte) (isFavorite ? 1 : 0));
+    }
+
     /**
      *
      * @return movieId
@@ -144,51 +203,5 @@ public class MovieModel implements Parcelable {
 
     public void setFavorite(boolean favorite) {
         isFavorite = favorite;
-    }
-
-    /**
-     * Constructor for re-constructing objects from a parcel
-     *
-     * @param in the parcel from which to read an object
-     */
-    public MovieModel(Parcel in) {
-        movieId = in.readInt();
-        movieOverview = in.readString();
-        moviePosterPath = in.readString();
-        movieTitle = in.readString();
-        movieUserRating = in.readString();
-        movieReleaseDate = in.readString();
-        movieBackdropPath = in.readString();
-        isFavorite = in.readByte() != 0;
-    }
-
-    public static final Parcelable.Creator<MovieModel> CREATOR
-            = new Parcelable.Creator<MovieModel>() {
-        @Override
-        public MovieModel createFromParcel(Parcel source) {
-            return new MovieModel(source);
-        }
-
-        @Override
-        public MovieModel[] newArray(int size) {
-            return new MovieModel[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(movieId);
-        dest.writeString(movieOverview);
-        dest.writeString(moviePosterPath);
-        dest.writeString(movieTitle);
-        dest.writeString(movieUserRating);
-        dest.writeString(movieReleaseDate);
-        dest.writeString(movieBackdropPath);
-        dest.writeByte((byte) (isFavorite ? 1 : 0));
     }
 }

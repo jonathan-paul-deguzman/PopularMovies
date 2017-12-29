@@ -5,11 +5,15 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
 import android.util.Log;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,9 +35,36 @@ public class FavoriteMovieContentProviderTest {
     public void setUp() {
         FavoriteMovieDbHelper dbHelper = new FavoriteMovieDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Log.d("flash", "deleting");
-        int rowsDeleted = db.delete(FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME, "1", null);
-        Log.d("flash", "rows deleted: " + rowsDeleted);
+        db.execSQL("drop table if exists " + FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME);
+        final String SQL_CREATE_FAVORITES_TABLE = "CREATE TABLE " +
+                FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME + " (" +
+                FavoriteMoviesContract.FavoriteMovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH + " TEXT NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH + " TEXT NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_USER_RATING + " TEXT NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE + " TEXT NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_OVERVIEW + " TEXT NOT NULL" + ");";
+        db.execSQL(SQL_CREATE_FAVORITES_TABLE);
+    }
+
+    @After
+    public void tearDown() {
+        FavoriteMovieDbHelper dbHelper = new FavoriteMovieDbHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.execSQL("drop table if exists " + FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME);
+        final String SQL_CREATE_FAVORITES_TABLE = "CREATE TABLE " +
+                FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME + " (" +
+                FavoriteMoviesContract.FavoriteMovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH + " TEXT NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH + " TEXT NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_USER_RATING + " TEXT NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE + " TEXT NOT NULL, " +
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_OVERVIEW + " TEXT NOT NULL" + ");";
+        db.execSQL(SQL_CREATE_FAVORITES_TABLE);
     }
 
     // Content Uri for favorites directory
@@ -78,6 +109,8 @@ public class FavoriteMovieContentProviderTest {
         testFavoriteValues.put(
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH, "testPosterPath");
         testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH, "testBackdropPath");
+        testFavoriteValues.put(
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_USER_RATING, "testUserRating");
         testFavoriteValues.put(
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE, "testReleaseDate");
@@ -86,28 +119,103 @@ public class FavoriteMovieContentProviderTest {
 
         ContentResolver testContentResolver = mContext.getContentResolver();
 
-        Uri uri = testContentResolver.insert(
+        Uri actualUri = testContentResolver.insert(
                 FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI, testFavoriteValues);
         Uri expectedUri = ContentUris.withAppendedId(
                 FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI, 1);
-        Log.d("flash", "uri: " + uri);
-        Log.d("flash", "expected uri: " + expectedUri);
 
         String insertProviderFailed = "Unable to insert item through Provider";
-        assertEquals(insertProviderFailed, uri, expectedUri);
+        assertEquals(insertProviderFailed, actualUri, expectedUri);
     }
 
-//    @Test
-//    public void testQuery() {
-//        FavoriteMovieDbHelper dbHelper = new FavoriteMovieDbHelper(mContext);
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//        assertTrue(db.isOpen());
-//    }
-//
-//    @Test
-//    public void testDelete() {
-//        FavoriteMovieDbHelper dbHelper = new FavoriteMovieDbHelper(mContext);
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//        assertTrue(db.isOpen());
-//    }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Test
+    public void testQuery() {
+        FavoriteMovieDbHelper dbHelper = new FavoriteMovieDbHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        assertTrue(db.isOpen());
+
+        ContentValues testFavoriteValues = new ContentValues();
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID, "testId");
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_TITLE, "testTitle");
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH, "testPosterPath");
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH, "testBackdropPath");
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_USER_RATING, "testUserRating");
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE, "testReleaseDate");
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_OVERVIEW, "testOverview");
+
+        long favoritesRowId = db.insert(
+                FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                null,
+                testFavoriteValues
+        );
+
+        String insertFailed = "Unable to insert directly into database";
+        assertTrue(insertFailed, favoritesRowId != -1);
+
+        db.close();
+
+        Cursor favoritesCursor = mContext.getContentResolver().query(
+                FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI,
+                null,
+                null,
+                null
+        );
+
+        String queryFailed = "Query failed to return a valid cursor";
+        assertTrue(queryFailed, favoritesCursor != null);
+
+        favoritesCursor.close();
+    }
+
+    //@Test
+    public void testDelete() {
+        FavoriteMovieDbHelper dbHelper = new FavoriteMovieDbHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        assertTrue(db.isOpen());
+
+        ContentValues testFavoriteValues = new ContentValues();
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID, "testId");
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_TITLE, "testTitle");
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH, "testPosterPath");
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH, "testBackdropPath");
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_USER_RATING, "testUserRating");
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE, "testReleaseDate");
+        testFavoriteValues.put(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_OVERVIEW, "testOverview");
+
+        long favoritesRowId = db.insert(
+                FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                null,
+                testFavoriteValues
+        );
+
+        db.close();
+
+        String insertFailed = "Unable to insert directly into database";
+        assertTrue(insertFailed, favoritesRowId != -1);
+
+        ContentResolver contentResolver = mContext.getContentResolver();
+
+        Uri uriToDelete = FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI
+                .buildUpon().appendPath("testId").build();
+        Log.d("flasher", uriToDelete.toString());
+        int favoritesDeleted = contentResolver.delete(uriToDelete, null, null);
+
+        String deleteFailed = "Unable to delete item in database";
+        assertTrue(deleteFailed, favoritesDeleted != 0);
+    }
 }

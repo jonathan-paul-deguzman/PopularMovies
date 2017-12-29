@@ -49,19 +49,23 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final String MOVIE_TYPE_TOP_RATED = "top_rated";
 
+    private static final String MOVIE_TYPE_FAVORITE = "favorite";
+
     private static final int DEFAULT_NUMBER_OF_COLUMNS = 2;
 
     private static final int FAVORITE_LOADER_ID = 0;
-
-    private ProgressBar mLoadingProgressBar;
-
-    private RecyclerView mMoviePosterRecyclerView;
 
     private Cursor mCursor;
 
     private String mCurrentMovieType;
 
+    private ProgressBar mLoadingProgressBar;
+
+    private RecyclerView mMoviePosterRecyclerView;
+
     private ArrayList<MovieModel> mMovieResultsList = new ArrayList<>();
+
+    private ArrayList<MovieModel> mFavoriteMoviesList = new ArrayList<>();
 
     private ArrayList<String> mFavoriteMoviesIdList = new ArrayList<>();
 
@@ -74,7 +78,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         getSupportLoaderManager().initLoader(FAVORITE_LOADER_ID, null, this);
 
         if (savedInstanceState != null) {
-            loadMoviesByType(savedInstanceState.getString("movieType"));
+            String currentMovieType = savedInstanceState.getString("movieType");
+            if (currentMovieType == MOVIE_TYPE_FAVORITE) {
+                loadFavoriteMoviesIntoRecyclerView();
+            } else {
+                loadMoviesByType(currentMovieType);
+            }
         } else {
             loadMoviesByType(MOVIE_TYPE_POPULAR);
         }
@@ -105,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 loadMoviesByType(mCurrentMovieType);
                 return true;
             case R.id.menu_sort_by_favorites:
+                mCurrentMovieType = MOVIE_TYPE_FAVORITE;
                 loadFavoriteMoviesIntoRecyclerView();
                 return true;
             default:
@@ -122,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mLoadingProgressBar.setVisibility(View.VISIBLE);
         MovieDetailsService movieDetails = MovieClient.getMovieDetailsService();
 
+        Log.i(TAG, "loadMoviesByType:Type:" + movieType);
         Call<MovieResultsModel> movieResults = null;
         if (movieType.equals(MOVIE_TYPE_POPULAR)) {
             movieResults = movieDetails.getPopularMovies(getResources().getString(R.string.api_key));
@@ -180,18 +191,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
     }
 
+    /**
+     * Override OnFavoriteItemClick from FavoriteMovieAdapterOnClickHandler defined in
+     * FavoriteMovieAdapter
+     *
+     * @param position the item that was selected from the recycler view
+     */
     @Override
     public void OnFavoriteItemClick(int position) {
-        String movieSelected = mFavoriteMoviesIdList.get(position);
-
-        MovieModel favoriteMovieSelected;
-        for (MovieModel movie : mMovieResultsList) {
-            if (movieSelected.equals(Integer.toString(movie.getMovieId()))) {
-                favoriteMovieSelected = movie;
-                favoriteMovieSelected.setFavorite(true);
-                launchMovieDetailsIntent(favoriteMovieSelected);
-            }
-        }
+        MovieModel favoriteMovieSelected = mFavoriteMoviesList.get(position);
+        favoriteMovieSelected.setFavorite(true);
+        launchMovieDetailsIntent(favoriteMovieSelected);
     }
 
     private void launchMovieDetailsIntent(MovieModel movieSelected) {
@@ -218,6 +228,65 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mMoviePosterRecyclerView.setAdapter(favoriteMovieAdapter);
     }
 
+    private MovieModel populateMovieWithCursorData(Cursor cursor) {
+        if (!cursor.moveToFirst()) {
+            return null;
+        }
+
+        int movieIdIndex = cursor.getInt(cursor.getColumnIndex(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID));
+        String overviewIndex = cursor.getString(cursor.getColumnIndex(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_OVERVIEW));
+        String posterPathIndex = cursor.getString(cursor.getColumnIndex(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH));
+        String titleIndex = cursor.getString(cursor.getColumnIndex(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_TITLE));
+        String userRatingIndex = cursor.getString(cursor.getColumnIndex(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_USER_RATING));
+        String releaseDateIndex = cursor.getString(cursor.getColumnIndex(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE));
+        String backdropPathIndex = cursor.getString(cursor.getColumnIndex(
+                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH));
+
+        return new MovieModel(movieIdIndex, overviewIndex, posterPathIndex, titleIndex,
+                userRatingIndex, releaseDateIndex, backdropPathIndex, true);
+    }
+
+    /**
+     * Responsible for determining if the device is connected to a network
+     *
+     * @return boolean value true if connected, false otherwise
+     */
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
+    }
+
+    /**
+     * Responsible for prompting the user to connect to a network using a snackbar message
+     */
+    private void showErrorMessageNoNetworkConnection() {
+        View view = findViewById(R.id.main_activity_layout);
+        Snackbar.make(view, getResources().getString(R.string.error_no_network_connection),
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction("RETRY", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        loadMoviesByType(MOVIE_TYPE_POPULAR);
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * Asynchronously queries the favorites database for the user's favorite movies
+     *
+     * @param id
+     * @param loaderArgs
+     * @return
+     */
     public Loader<Cursor> onCreateLoader(int id, final Bundle loaderArgs) {
         return new AsyncTaskLoader<Cursor>(this) {
 
@@ -263,44 +332,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mCursor = data;
+        if (data != null) {
+            mCursor = data;
 
-        for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
-            mFavoriteMoviesIdList.add(data.getString(
-                    data.getColumnIndex(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID)));
+            if (mFavoriteMoviesIdList != null) {
+                mFavoriteMoviesIdList.clear();
+            }
+
+            try {
+                for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
+                    MovieModel favoriteMovie = populateMovieWithCursorData(data);
+                    mFavoriteMoviesList.add(favoriteMovie);
+                }
+            } finally {
+                data.close();
+            }
         }
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
-
-    /**
-     * Responsible for determining if the device is connected to a network
-     *
-     * @return boolean value true if connected, false otherwise
-     */
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnectedOrConnecting();
-    }
-
-    /**
-     * Responsible for prompting the user to connect to a network using a snackbar message
-     */
-    private void showErrorMessageNoNetworkConnection() {
-        View view = findViewById(R.id.main_activity_layout);
-        Snackbar.make(view, getResources().getString(R.string.error_no_network_connection),
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction("RETRY", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        loadMoviesByType(MOVIE_TYPE_POPULAR);
-                    }
-                })
-                .show();
-    }
+    public void onLoaderReset(Loader<Cursor> loader) {}
 }

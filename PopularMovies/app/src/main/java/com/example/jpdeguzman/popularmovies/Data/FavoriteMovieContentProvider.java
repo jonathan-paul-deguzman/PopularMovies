@@ -130,6 +130,13 @@ public class FavoriteMovieContentProvider extends ContentProvider {
 
         int rowsDeleted;
         switch (match) {
+            case FAVORITES:
+                rowsDeleted = db.delete(
+                        FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                        null,
+                        null
+                );
+                break;
             /*
              *  Delete a single row with a particular id
              */

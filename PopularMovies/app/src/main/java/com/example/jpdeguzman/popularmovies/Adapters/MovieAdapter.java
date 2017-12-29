@@ -13,6 +13,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+/**
+ *  Adapter for creating the popular and top-rated movies layout
+ */
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
