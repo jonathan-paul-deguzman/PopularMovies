@@ -55,8 +55,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final int FAVORITE_LOADER_ID = 0;
 
-    private String mCurrentMovieType;
-
     private ProgressBar mLoadingProgressBar;
 
     private RecyclerView mMoviePosterRecyclerView;
@@ -64,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private ArrayList<MovieModel> mMovieResultsList = new ArrayList<>();
 
     private ArrayList<MovieModel> mFavoriteMoviesList = new ArrayList<>();
+
+    private String mCurrentMovieType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,17 +103,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         switch (item.getItemId()) {
             case R.id.menu_sort_by_popular:
                 mCurrentMovieType = MOVIE_TYPE_POPULAR;
-                Log.d("testing", "type: " + mCurrentMovieType);
                 loadMoviesByType(mCurrentMovieType);
                 return true;
             case R.id.menu_sort_by_top_rated:
                 mCurrentMovieType = MOVIE_TYPE_TOP_RATED;
-                Log.d("testing", "type: " + mCurrentMovieType);
                 loadMoviesByType(mCurrentMovieType);
                 return true;
             case R.id.menu_sort_by_favorites:
                 mCurrentMovieType = MOVIE_TYPE_FAVORITE;
-                Log.d("testing", "type: " + mCurrentMovieType);
                 loadFavoriteMoviesIntoRecyclerView();
                 return true;
             default:
