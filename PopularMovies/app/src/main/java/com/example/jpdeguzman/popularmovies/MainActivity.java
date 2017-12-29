@@ -65,8 +65,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private ArrayList<MovieModel> mFavoriteMoviesList = new ArrayList<>();
 
-    private ArrayList<String> mFavoriteMoviesIdList = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,14 +103,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         switch (item.getItemId()) {
             case R.id.menu_sort_by_popular:
                 mCurrentMovieType = MOVIE_TYPE_POPULAR;
+                Log.d("testing", "type: " + mCurrentMovieType);
                 loadMoviesByType(mCurrentMovieType);
                 return true;
             case R.id.menu_sort_by_top_rated:
                 mCurrentMovieType = MOVIE_TYPE_TOP_RATED;
+                Log.d("testing", "type: " + mCurrentMovieType);
                 loadMoviesByType(mCurrentMovieType);
                 return true;
             case R.id.menu_sort_by_favorites:
                 mCurrentMovieType = MOVIE_TYPE_FAVORITE;
+                Log.d("testing", "type: " + mCurrentMovieType);
                 loadFavoriteMoviesIntoRecyclerView();
                 return true;
             default:
@@ -179,14 +180,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public void OnItemClick(int position) {
         MovieModel movieSelected = mMovieResultsList.get(position);
-
-        if (movieSelected != null) {
-            String movieId = Integer.toString(movieSelected.getMovieId());
-            if (mFavoriteMoviesIdList.contains(movieId)) {
+        String movieId = Integer.toString(movieSelected.getMovieId());
+        for (int i = 0; i < mFavoriteMoviesList.size(); i++) {
+            if (movieId.equals(mFavoriteMoviesList.get(i).getMovieId())) {
                 movieSelected.setFavorite(true);
             }
-            launchMovieDetailsIntent(movieSelected);
         }
+        launchMovieDetailsIntent(movieSelected);
     }
 
     /**
@@ -208,10 +208,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         startActivity(movieDetailsIntent);
     }
 
-    /**
-     * Responsible for using our custom movie adapter to store each MovieModel object's poster
-     * image in each index of the grid view
-     */
     private void loadMoviePostersIntoRecyclerView() {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, DEFAULT_NUMBER_OF_COLUMNS);
         mMoviePosterRecyclerView.setLayoutManager(gridLayoutManager);
@@ -227,10 +223,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     private MovieModel populateMovieWithCursorData(Cursor cursor) {
-        if (!cursor.moveToFirst()) {
-            return null;
-        }
-
         int movieIdIndex = cursor.getInt(cursor.getColumnIndex(
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID));
         String overviewIndex = cursor.getString(cursor.getColumnIndex(
@@ -330,18 +322,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data != null) {
-            if (mFavoriteMoviesIdList != null) {
-                mFavoriteMoviesIdList.clear();
-            }
+        if (mFavoriteMoviesList != null) {
+            mFavoriteMoviesList.clear();
+        }
 
-            try {
-                for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
-                    MovieModel favoriteMovie = populateMovieWithCursorData(data);
-                    mFavoriteMoviesList.add(favoriteMovie);
-                }
-            } finally {
-                data.close();
+        Cursor cursor = null;
+        try {
+            cursor = data;
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                MovieModel favoriteMovie = populateMovieWithCursorData(cursor);
+                mFavoriteMoviesList.add(favoriteMovie);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
             }
         }
     }
