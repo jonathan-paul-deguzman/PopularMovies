@@ -1,16 +1,17 @@
 package com.example.jpdeguzman.popularmovies.Adapters;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.jpdeguzman.popularmovies.Data.FavoriteMoviesContract;
+import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.R;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 /**
  *  Adapter for creating the favorite movies layout
@@ -23,7 +24,7 @@ public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdap
 
     private Context mContext;
 
-    private Cursor mCursor;
+    private ArrayList<MovieModel> mFavoriteMovieList;
 
     private FavoriteMovieAdapterOnClickHandler mClickHandler;
 
@@ -31,10 +32,11 @@ public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdap
         void OnFavoriteItemClick(int position);
     }
 
-    public FavoriteMovieAdapter(Context context, FavoriteMovieAdapterOnClickHandler clickHandler, Cursor cursor) {
+    public FavoriteMovieAdapter(Context context, FavoriteMovieAdapterOnClickHandler clickHandler,
+                                ArrayList<MovieModel> favoriteMovieList) {
         mClickHandler = clickHandler;
         mContext = context;
-        mCursor = cursor;
+        mFavoriteMovieList = favoriteMovieList;
     }
 
     @Override
@@ -45,15 +47,13 @@ public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdap
 
     @Override
     public void onBindViewHolder(FavoriteMovieAdapter.FavoriteMovieAdapterViewHolder holder, final int position) {
-        if (!mCursor.moveToPosition(position)) {
-            return;
+        final MovieModel currentMovie = mFavoriteMovieList.get(position);
+        if (currentMovie != null) {
+            String moviePosterPath = currentMovie.getMoviePosterPath();
+            Picasso.with(mContext)
+                    .load(IMAGE_BASE_URL + IMAGE_RECOMMENDED_SIZE + moviePosterPath)
+                    .into(holder.moviePosterImageView);
         }
-
-        String moviePosterPath = mCursor.getString(mCursor.getColumnIndex(
-                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH));
-        Picasso.with(mContext)
-                .load(IMAGE_BASE_URL + IMAGE_RECOMMENDED_SIZE + moviePosterPath)
-                .into(holder.moviePosterImageView);
 
         holder.moviePosterImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +65,7 @@ public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdap
 
     @Override
     public int getItemCount() {
-        return mCursor != null ? mCursor.getCount() : 0;
+        return mFavoriteMovieList.size();
     }
 
     class FavoriteMovieAdapterViewHolder extends RecyclerView.ViewHolder {

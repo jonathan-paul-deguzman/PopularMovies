@@ -55,8 +55,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final int FAVORITE_LOADER_ID = 0;
 
-    private Cursor mCursor;
-
     private String mCurrentMovieType;
 
     private ProgressBar mLoadingProgressBar;
@@ -224,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private void loadFavoriteMoviesIntoRecyclerView() {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, DEFAULT_NUMBER_OF_COLUMNS);
         mMoviePosterRecyclerView.setLayoutManager(gridLayoutManager);
-        FavoriteMovieAdapter favoriteMovieAdapter = new FavoriteMovieAdapter(this, this, mCursor);
+        FavoriteMovieAdapter favoriteMovieAdapter = new FavoriteMovieAdapter(this, this, mFavoriteMoviesList);
         mMoviePosterRecyclerView.setAdapter(favoriteMovieAdapter);
     }
 
@@ -333,8 +331,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null) {
-            mCursor = data;
-
             if (mFavoriteMoviesIdList != null) {
                 mFavoriteMoviesIdList.clear();
             }
