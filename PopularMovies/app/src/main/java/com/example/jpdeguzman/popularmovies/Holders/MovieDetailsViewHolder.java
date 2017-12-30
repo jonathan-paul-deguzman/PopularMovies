@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.jpdeguzman.popularmovies.Adapters.FavoriteMovieAdapter;
 import com.example.jpdeguzman.popularmovies.Constants.Images;
 import com.example.jpdeguzman.popularmovies.Data.FavoriteMoviesContract;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
@@ -109,11 +110,18 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
                 favoriteMovie.getMovieOverview());
         context.getContentResolver().insert(FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI,
                 contentValues);
+        notifyAdapterThatFavoritesDatabaseHasChanged();
     }
 
     private void removeFavoriteMovie(MovieModel favoriteMovie) {
         Uri uri = FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI;
         uri = uri.buildUpon().appendPath(Integer.toString(favoriteMovie.getMovieId())).build();
         context.getContentResolver().delete(uri, null, null);
+        notifyAdapterThatFavoritesDatabaseHasChanged();
+    }
+
+    private void notifyAdapterThatFavoritesDatabaseHasChanged() {
+        FavoriteMovieAdapter favoriteMovieAdapter = new FavoriteMovieAdapter(context, null, null);
+        favoriteMovieAdapter.notifyDataSetChanged();
     }
 }

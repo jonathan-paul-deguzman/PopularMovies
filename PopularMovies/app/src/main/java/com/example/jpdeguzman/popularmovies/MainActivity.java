@@ -6,9 +6,6 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -27,7 +24,9 @@ import com.example.jpdeguzman.popularmovies.Constants.Movies;
 import com.example.jpdeguzman.popularmovies.Data.FavoriteMoviesContract;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
+import com.example.jpdeguzman.popularmovies.Services.FavoriteMoviesTask;
 import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
+import com.example.jpdeguzman.popularmovies.Services.OnEventListener;
 
 import java.util.ArrayList;
 
@@ -42,7 +41,7 @@ import retrofit2.Response;
  * selected movie.
  */
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler,
-        FavoriteMovieAdapter.FavoriteMovieAdapterOnClickHandler, LoaderManager.LoaderCallbacks<Cursor> {
+        FavoriteMovieAdapter.FavoriteMovieAdapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -62,18 +61,32 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         setContentView(R.layout.activity_main);
         mLoadingProgressBar = findViewById(R.id.pb_loading_indicator);
         mMoviePosterRecyclerView = findViewById(R.id.rv_movie_posters);
-        getSupportLoaderManager().initLoader(Movies.FAVORITE_MOVIE_LOADER_ID, null, this);
+        getFavoriteMovies();
 
         if (savedInstanceState != null) {
             String savedMovieType = savedInstanceState.getString(Movies.MOVIE_TYPE_SAVED);
-            if (savedMovieType == Movies.MOVIE_TYPE_FAVORITE) {
-                loadFavoriteMoviesIntoRecyclerView();
-            } else {
-                loadMoviesByType(savedMovieType);
-            }
+            loadSavedMovieTypeIntoRecyclerView(savedMovieType);
         } else {
-            loadMoviesByType(Movies.MOVIE_TYPE_POPULAR);
+            loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getFavoriteMovies();
+        if (getIntent().getExtras() != null) {
+            String savedMovieType = getIntent().getExtras().getString(Movies.MOVIE_TYPE_SAVED);
+            loadSavedMovieTypeIntoRecyclerView(savedMovieType);
+        } else {
+            loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        getIntent().putExtra(Movies.MOVIE_TYPE_SAVED, mCurrentMovieType);
+        super.onStop();
     }
 
     @Override
@@ -121,9 +134,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         Log.i(TAG, "loadMoviesByType:Type:" + movieType);
         Call<MovieResultsModel> movieResults = null;
-        if (movieType.equals(Movies.MOVIE_TYPE_POPULAR)) {
+        if (Movies.MOVIE_TYPE_POPULAR.equals(movieType)) {
             movieResults = movieDetails.getPopularMovies(getResources().getString(R.string.api_key));
-        } else if (movieType.equals(Movies.MOVIE_TYPE_TOP_RATED)) {
+        } else if (Movies.MOVIE_TYPE_TOP_RATED.equals(movieType)) {
             movieResults = movieDetails.getTopRatedMovies(getResources().getString(R.string.api_key));
         }
 
@@ -213,6 +226,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mMoviePosterRecyclerView.setAdapter(favoriteMovieAdapter);
     }
 
+    private void loadSavedMovieTypeIntoRecyclerView(String savedMovieType) {
+        if (savedMovieType == Movies.MOVIE_TYPE_FAVORITE) {
+            loadFavoriteMoviesIntoRecyclerView();
+        } else if (savedMovieType == Movies.MOVIE_TYPE_POPULAR
+                || savedMovieType == Movies.MOVIE_TYPE_TOP_RATED) {
+            loadMoviesByType(savedMovieType);
+        } else {
+            loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
+        }
+    }
+
     private MovieModel populateMovieWithCursorData(Cursor cursor) {
         int movieIdIndex = cursor.getInt(cursor.getColumnIndex(
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID));
@@ -231,6 +255,39 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         return new MovieModel(movieIdIndex, overviewIndex, posterPathIndex, titleIndex,
                 userRatingIndex, releaseDateIndex, backdropPathIndex, true);
+    }
+
+
+    private void getFavoriteMovies() {
+        FavoriteMoviesTask favoriteMoviesTask =
+                new FavoriteMoviesTask(getApplicationContext(), new OnEventListener<Cursor>() {
+                    @Override
+                    public void onSuccess(Cursor data) {
+                        Log.i(TAG, "getFavoriteMovies:onSuccess");
+                        if (mFavoriteMoviesList != null) {
+                            mFavoriteMoviesList.clear();
+                        }
+
+                        Cursor cursor = null;
+                        try {
+                            cursor = data;
+                            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                                MovieModel favoriteMovie = populateMovieWithCursorData(cursor);
+                                mFavoriteMoviesList.add(favoriteMovie);
+                            }
+                        } finally {
+                            if (cursor != null) {
+                                cursor.close();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e(TAG, "getFavoriteMovies:onFailure:" + e.getMessage());
+                    }
+                });
+        favoriteMoviesTask.execute();
     }
 
     /**
@@ -260,77 +317,4 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 })
                 .show();
     }
-
-    /**
-     * Asynchronously queries the favorites database for the user's favorite movies
-     *
-     * @param id
-     * @param loaderArgs
-     * @return
-     */
-    public Loader<Cursor> onCreateLoader(int id, final Bundle loaderArgs) {
-        return new AsyncTaskLoader<Cursor>(this) {
-
-            Cursor mFavoritesData = null;
-
-            @Override
-            protected void onStartLoading() {
-                if (mFavoritesData != null) {
-                    deliverResult(mFavoritesData);
-                } else {
-                    forceLoad();
-                }
-            }
-
-            @Override
-            public Cursor loadInBackground() {
-                try {
-                    return  getContentResolver().query(
-                            FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI,
-                            null,
-                            null,
-                            null,
-                            FavoriteMoviesContract.FavoriteMovieEntry._ID
-                    );
-                } catch (Exception e) {
-                    Log.e(TAG, "Failed to asynchronously load data");
-                    e.printStackTrace();
-                    return null;
-                }
-            }
-
-            /**
-             * Sends the result of the load to the registered listener
-             *
-             * @param data A cursor
-             */
-            public void deliverResult(Cursor data) {
-                mFavoritesData = data;
-                super.deliverResult(data);
-            }
-        };
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (mFavoriteMoviesList != null) {
-            mFavoriteMoviesList.clear();
-        }
-
-        Cursor cursor = null;
-        try {
-            cursor = data;
-            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                MovieModel favoriteMovie = populateMovieWithCursorData(cursor);
-                mFavoriteMoviesList.add(favoriteMovie);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {}
 }
