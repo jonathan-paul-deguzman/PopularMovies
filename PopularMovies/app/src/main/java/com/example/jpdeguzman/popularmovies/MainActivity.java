@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 import com.example.jpdeguzman.popularmovies.Adapters.FavoriteMovieAdapter;
 import com.example.jpdeguzman.popularmovies.Adapters.MovieAdapter;
 import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
+import com.example.jpdeguzman.popularmovies.Constants.Movies;
 import com.example.jpdeguzman.popularmovies.Data.FavoriteMoviesContract;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
@@ -45,25 +46,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private static final String MOVIE_TYPE_POPULAR = "popular";
-
-    private static final String MOVIE_TYPE_TOP_RATED = "top_rated";
-
-    private static final String MOVIE_TYPE_FAVORITE = "favorite";
-
-    private static final int DEFAULT_NUMBER_OF_COLUMNS = 2;
-
-    private static final int FAVORITE_LOADER_ID = 0;
-
     private ProgressBar mLoadingProgressBar;
 
     private RecyclerView mMoviePosterRecyclerView;
 
+    private String mCurrentMovieType;
+
     private ArrayList<MovieModel> mMovieResultsList = new ArrayList<>();
 
     private ArrayList<MovieModel> mFavoriteMoviesList = new ArrayList<>();
-
-    private String mCurrentMovieType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,23 +62,23 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         setContentView(R.layout.activity_main);
         mLoadingProgressBar = findViewById(R.id.pb_loading_indicator);
         mMoviePosterRecyclerView = findViewById(R.id.rv_movie_posters);
-        getSupportLoaderManager().initLoader(FAVORITE_LOADER_ID, null, this);
+        getSupportLoaderManager().initLoader(Movies.FAVORITE_MOVIE_LOADER_ID, null, this);
 
         if (savedInstanceState != null) {
-            String currentMovieType = savedInstanceState.getString("movieType");
-            if (currentMovieType == MOVIE_TYPE_FAVORITE) {
+            String savedMovieType = savedInstanceState.getString(Movies.MOVIE_TYPE_SAVED);
+            if (savedMovieType == Movies.MOVIE_TYPE_FAVORITE) {
                 loadFavoriteMoviesIntoRecyclerView();
             } else {
-                loadMoviesByType(currentMovieType);
+                loadMoviesByType(savedMovieType);
             }
         } else {
-            loadMoviesByType(MOVIE_TYPE_POPULAR);
+            loadMoviesByType(Movies.MOVIE_TYPE_POPULAR);
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString("movieType", mCurrentMovieType);
+        outState.putString(Movies.MOVIE_TYPE_SAVED, mCurrentMovieType);
         super.onSaveInstanceState(outState);
     }
 
@@ -102,15 +93,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_sort_by_popular:
-                mCurrentMovieType = MOVIE_TYPE_POPULAR;
+                mCurrentMovieType = Movies.MOVIE_TYPE_POPULAR;
                 loadMoviesByType(mCurrentMovieType);
                 return true;
             case R.id.menu_sort_by_top_rated:
-                mCurrentMovieType = MOVIE_TYPE_TOP_RATED;
+                mCurrentMovieType = Movies.MOVIE_TYPE_TOP_RATED;
                 loadMoviesByType(mCurrentMovieType);
                 return true;
             case R.id.menu_sort_by_favorites:
-                mCurrentMovieType = MOVIE_TYPE_FAVORITE;
+                mCurrentMovieType = Movies.MOVIE_TYPE_FAVORITE;
                 loadFavoriteMoviesIntoRecyclerView();
                 return true;
             default:
@@ -130,9 +121,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         Log.i(TAG, "loadMoviesByType:Type:" + movieType);
         Call<MovieResultsModel> movieResults = null;
-        if (movieType.equals(MOVIE_TYPE_POPULAR)) {
+        if (movieType.equals(Movies.MOVIE_TYPE_POPULAR)) {
             movieResults = movieDetails.getPopularMovies(getResources().getString(R.string.api_key));
-        } else if (movieType.equals(MOVIE_TYPE_TOP_RATED)) {
+        } else if (movieType.equals(Movies.MOVIE_TYPE_TOP_RATED)) {
             movieResults = movieDetails.getTopRatedMovies(getResources().getString(R.string.api_key));
         }
 
@@ -201,21 +192,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private void launchMovieDetailsIntent(MovieModel movieSelected) {
         Intent movieDetailsIntent = new Intent(MainActivity.this, MovieDetailsActivity.class);
-        movieDetailsIntent.putExtra(".MovieModel", movieSelected);
+        movieDetailsIntent.putExtra(Movies.MOVIE_EXTRA, movieSelected);
         startActivity(movieDetailsIntent);
     }
 
     private void loadMoviePostersIntoRecyclerView() {
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, DEFAULT_NUMBER_OF_COLUMNS);
+        GridLayoutManager gridLayoutManager =
+                new GridLayoutManager(this, Movies.MOVIE_POSTERS_DEFAULT_NUMBER_OF_COLUMNS);
         mMoviePosterRecyclerView.setLayoutManager(gridLayoutManager);
         MovieAdapter movieAdapter = new MovieAdapter(this, this, mMovieResultsList);
         mMoviePosterRecyclerView.setAdapter(movieAdapter);
     }
 
     private void loadFavoriteMoviesIntoRecyclerView() {
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, DEFAULT_NUMBER_OF_COLUMNS);
+        GridLayoutManager gridLayoutManager =
+                new GridLayoutManager(this, Movies.MOVIE_POSTERS_DEFAULT_NUMBER_OF_COLUMNS);
         mMoviePosterRecyclerView.setLayoutManager(gridLayoutManager);
-        FavoriteMovieAdapter favoriteMovieAdapter = new FavoriteMovieAdapter(this, this, mFavoriteMoviesList);
+        FavoriteMovieAdapter favoriteMovieAdapter =
+                new FavoriteMovieAdapter(this, this, mFavoriteMoviesList);
         mMoviePosterRecyclerView.setAdapter(favoriteMovieAdapter);
     }
 
@@ -261,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 .setAction("RETRY", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        loadMoviesByType(MOVIE_TYPE_POPULAR);
+                        loadMoviesByType(Movies.MOVIE_TYPE_POPULAR);
                     }
                 })
                 .show();

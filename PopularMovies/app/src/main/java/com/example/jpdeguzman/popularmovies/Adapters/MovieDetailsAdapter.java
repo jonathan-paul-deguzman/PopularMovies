@@ -27,13 +27,13 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private static final int MOVIE_REVIEWS_ID = 2;
 
+    private final Context context;
+
     private ArrayList<MovieModel> detailItemList;
 
     private ArrayList<VideoModel> videoItemList;
 
     private ArrayList<ReviewModel> reviewItemList;
-
-    private final Context context;
 
     public MovieDetailsAdapter(Context context, ArrayList<MovieModel> detailItemList,
                                ArrayList<VideoModel> videoItemList, ArrayList<ReviewModel> reviewItemList) {

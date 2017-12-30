@@ -10,6 +10,8 @@ import android.view.MenuItem;
 
 import com.example.jpdeguzman.popularmovies.Adapters.MovieDetailsAdapter;
 import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
+import com.example.jpdeguzman.popularmovies.Constants.MovieDetails;
+import com.example.jpdeguzman.popularmovies.Constants.Movies;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.Models.ReviewModel;
 import com.example.jpdeguzman.popularmovies.Models.ReviewResultsModel;
@@ -31,15 +33,15 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private MovieModel mMovieDetails;
 
+    private boolean isFinishedRequestingVideos = false;
+
+    private boolean isFinishedRequestingReviews = false;
+
     private ArrayList<MovieModel> mMovieDetailsList = new ArrayList<>();
 
     private ArrayList<VideoModel> mVideoResultsList = new ArrayList<>();
 
     private ArrayList<ReviewModel> mReviewResultsList = new ArrayList<>();
-
-    private boolean isFinishedRequestingVideos = false;
-
-    private boolean isFinishedRequestingReviews = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,14 +51,14 @@ public class MovieDetailsActivity extends AppCompatActivity {
         mRecyclerViewMovieDetails.setLayoutManager(new LinearLayoutManager(this));
 
         if (savedInstanceState != null) {
-            mMovieDetails = savedInstanceState.getParcelable("currentMovie");
-            mVideoResultsList = savedInstanceState.getParcelableArrayList("videoList");
-            mReviewResultsList = savedInstanceState.getParcelableArrayList("reviewList");
+            mMovieDetails = savedInstanceState.getParcelable(MovieDetails.DETAILS_CURRENT_MOVIE_SAVED);
+            mVideoResultsList = savedInstanceState.getParcelableArrayList(MovieDetails.DETAILS_VIDEO_LIST_SAVED);
+            mReviewResultsList = savedInstanceState.getParcelableArrayList(MovieDetails.DETAILS_REVIEW_LIST_SAVED);
             setupMovieDetails();
             bindDataToAdapter(mMovieDetailsList, mVideoResultsList, mReviewResultsList);
         } else {
             Bundle data = getIntent().getExtras();
-            mMovieDetails = data.getParcelable(".MovieModel");
+            mMovieDetails = data.getParcelable(Movies.MOVIE_EXTRA);
             setupMovieDetails();
             setupMovieVideos();
             setupMovieReviews();
@@ -65,9 +67,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable("currentMovie", mMovieDetails);
-        outState.putParcelableArrayList("videoList", mVideoResultsList);
-        outState.putParcelableArrayList("reviewList", mReviewResultsList);
+        outState.putParcelable(MovieDetails.DETAILS_CURRENT_MOVIE_SAVED, mMovieDetails);
+        outState.putParcelableArrayList(MovieDetails.DETAILS_VIDEO_LIST_SAVED, mVideoResultsList);
+        outState.putParcelableArrayList(MovieDetails.DETAILS_REVIEW_LIST_SAVED, mReviewResultsList);
         super.onSaveInstanceState(outState);
     }
 

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.jpdeguzman.popularmovies.Constants.Images;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.R;
 import com.squareup.picasso.Picasso;
@@ -17,10 +18,6 @@ import java.util.ArrayList;
  *  Adapter for creating the popular and top-rated movies layout
  */
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
-
-    private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
-
-    private static final String IMAGE_RECOMMENDED_SIZE = "w500";
 
     private final Context mContext;
 
@@ -50,7 +47,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         if (currentMovie != null) {
             String moviePosterPath = currentMovie.getMoviePosterPath();
             Picasso.with(mContext)
-                    .load(IMAGE_BASE_URL + IMAGE_RECOMMENDED_SIZE + moviePosterPath)
+                    .load(Images.IMAGE_BASE_URL + Images.IMAGE_RECOMMENDED_SIZE + moviePosterPath)
                     .into(holder.moviePosterImageView);
         }
 
