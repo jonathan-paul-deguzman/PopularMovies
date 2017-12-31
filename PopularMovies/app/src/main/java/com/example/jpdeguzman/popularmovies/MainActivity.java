@@ -30,6 +30,8 @@ import com.example.jpdeguzman.popularmovies.Services.OnEventListener;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,9 +47,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private ProgressBar mLoadingProgressBar;
+    @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingProgressBar;
 
-    private RecyclerView mMoviePosterRecyclerView;
+    @BindView(R.id.rv_movie_posters) RecyclerView mMoviePosterRecyclerView;
 
     private String mCurrentMovieType;
 
@@ -59,8 +61,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mLoadingProgressBar = findViewById(R.id.pb_loading_indicator);
-        mMoviePosterRecyclerView = findViewById(R.id.rv_movie_posters);
+        ButterKnife.bind(this);
         getFavoriteMovies();
 
         if (savedInstanceState != null) {
@@ -260,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private void getFavoriteMovies() {
         FavoriteMoviesTask favoriteMoviesTask =
-                new FavoriteMoviesTask(getApplicationContext(), new OnEventListener<Cursor>() {
+                new FavoriteMoviesTask(this, new OnEventListener<Cursor>() {
                     @Override
                     public void onSuccess(Cursor data) {
                         Log.i(TAG, "getFavoriteMovies:onSuccess");

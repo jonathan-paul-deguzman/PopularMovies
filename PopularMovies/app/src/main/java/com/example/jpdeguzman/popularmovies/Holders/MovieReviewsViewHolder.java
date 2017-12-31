@@ -9,20 +9,22 @@ import com.example.jpdeguzman.popularmovies.R;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * View Holder for movie reviews
  */
 
 public class MovieReviewsViewHolder extends RecyclerView.ViewHolder {
 
-    private TextView reviewAuthorTextView;
+    @BindView(R.id.tv_review_author) TextView reviewAuthorTextView;
 
-    private TextView reviewContentTextView;
+    @BindView(R.id.tv_review_content) TextView reviewContentTextView;
 
     public MovieReviewsViewHolder(View itemView) {
         super(itemView);
-        reviewAuthorTextView = itemView.findViewById(R.id.tv_review_author);
-        reviewContentTextView = itemView.findViewById(R.id.tv_review_content);
+        ButterKnife.bind(this, itemView);
     }
 
     public void configureReviewsViewHolder(

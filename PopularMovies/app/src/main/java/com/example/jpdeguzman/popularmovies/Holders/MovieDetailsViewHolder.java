@@ -18,24 +18,28 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * View Holder for movie details
  */
 public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private ImageView movieBackdropImageView;
+    @BindView(R.id.iv_movie_backdrop) ImageView movieBackdropImageView;
 
-    private ImageView moviePosterImageView;
+    @BindView(R.id.iv_movie_poster) ImageView moviePosterImageView;
 
-    private TextView movieTitleTextView;
+    @BindView(R.id.tv_movie_title) TextView movieTitleTextView;
 
-    private TextView movieReleaseDateTextView;
+    @BindView(R.id.tv_movie_release_date) TextView movieReleaseDateTextView;
 
-    private TextView movieUserRatingTextView;
+    @BindView(R.id.tv_movie_user_rating) TextView movieUserRatingTextView;
 
-    private TextView movieOverviewTextView;
+    @BindView(R.id.tv_movie_overview) TextView movieOverviewTextView;
 
-    private Button markMovieAsFavoriteButton;
+    @BindView(R.id.button_mark_as_favorite) Button markMovieAsFavoriteButton;
 
     private final Context context;
 
@@ -44,13 +48,7 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
     public MovieDetailsViewHolder(Context context, View itemView) {
         super(itemView);
         this.context = context;
-        movieBackdropImageView = itemView.findViewById(R.id.iv_movie_backdrop);
-        moviePosterImageView = itemView.findViewById(R.id.iv_movie_poster);
-        movieTitleTextView = itemView.findViewById(R.id.tv_movie_title);
-        movieReleaseDateTextView = itemView.findViewById(R.id.tv_movie_release_date);
-        movieUserRatingTextView = itemView.findViewById(R.id.tv_movie_user_rating);
-        movieOverviewTextView = itemView.findViewById(R.id.tv_movie_overview);
-        markMovieAsFavoriteButton = itemView.findViewById(R.id.button_mark_as_favorite);
+        ButterKnife.bind(this, itemView);
         markMovieAsFavoriteButton.setOnClickListener(this);
     }
 

@@ -14,6 +14,10 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * View holder for movie videos
  */
@@ -26,9 +30,9 @@ public class MovieVideosViewHolder extends RecyclerView.ViewHolder implements Vi
 
     private static final String YOUTUBE_THUMBNAIL_END_URL = "/0.jpg";
 
-    private ImageView videoThumbnailImageView;
+    @BindView(R.id.iv_video_thumbnail) ImageView videoThumbnailImageView;
 
-    private TextView videoNameTextView;
+    @BindView(R.id.tv_video_name) TextView videoNameTextView;
 
     private String videoKey;
 
@@ -37,8 +41,7 @@ public class MovieVideosViewHolder extends RecyclerView.ViewHolder implements Vi
     public MovieVideosViewHolder(Context context, View itemView) {
         super(itemView);
         this.context = context;
-        videoThumbnailImageView = itemView.findViewById(R.id.iv_video_thumbnail);
-        videoNameTextView = itemView.findViewById(R.id.tv_video_name);
+        ButterKnife.bind(this, itemView);
         itemView.setOnClickListener(this);
     }
 

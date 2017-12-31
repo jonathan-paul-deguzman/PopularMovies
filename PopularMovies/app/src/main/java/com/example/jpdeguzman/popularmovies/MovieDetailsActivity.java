@@ -21,6 +21,8 @@ import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,7 +31,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = MovieDetailsActivity.class.getSimpleName();
 
-    private RecyclerView mRecyclerViewMovieDetails;
+    @BindView(R.id.rv_movie_details) RecyclerView mRecyclerViewMovieDetails;
 
     private MovieModel mMovieDetails;
 
@@ -47,7 +49,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
-        mRecyclerViewMovieDetails = findViewById(R.id.rv_movie_details);
+        ButterKnife.bind(this);
         mRecyclerViewMovieDetails.setLayoutManager(new LinearLayoutManager(this));
 
         if (savedInstanceState != null) {
