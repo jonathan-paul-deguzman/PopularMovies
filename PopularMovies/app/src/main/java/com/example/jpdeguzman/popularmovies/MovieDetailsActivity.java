@@ -17,15 +17,20 @@ import com.example.jpdeguzman.popularmovies.Models.ReviewModel;
 import com.example.jpdeguzman.popularmovies.Models.ReviewResultsModel;
 import com.example.jpdeguzman.popularmovies.Models.VideoModel;
 import com.example.jpdeguzman.popularmovies.Models.VideoResultsModel;
+import com.example.jpdeguzman.popularmovies.Models.VideosAndReviewsModel;
 import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
 
 import java.util.ArrayList;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.schedulers.Schedulers;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 
@@ -33,11 +38,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.rv_movie_details) RecyclerView mRecyclerViewMovieDetails;
 
+    @BindString(R.string.api_key) String mUserApiKey;
+
     private MovieModel mMovieDetails;
-
-    private boolean isFinishedRequestingVideos = false;
-
-    private boolean isFinishedRequestingReviews = false;
 
     private ArrayList<MovieModel> mMovieDetailsList = new ArrayList<>();
 
@@ -56,14 +59,13 @@ public class MovieDetailsActivity extends AppCompatActivity {
             mMovieDetails = savedInstanceState.getParcelable(MovieDetails.DETAILS_CURRENT_MOVIE_SAVED);
             mVideoResultsList = savedInstanceState.getParcelableArrayList(MovieDetails.DETAILS_VIDEO_LIST_SAVED);
             mReviewResultsList = savedInstanceState.getParcelableArrayList(MovieDetails.DETAILS_REVIEW_LIST_SAVED);
-            setupMovieDetails();
+            mMovieDetailsList.add(mMovieDetails);
             bindDataToAdapter(mMovieDetailsList, mVideoResultsList, mReviewResultsList);
         } else {
             Bundle data = getIntent().getExtras();
             mMovieDetails = data.getParcelable(Movies.MOVIE_EXTRA);
-            setupMovieDetails();
-            setupMovieVideos();
-            setupMovieReviews();
+            mMovieDetailsList.add(mMovieDetails);
+            setupMovieDetailsPageWithObservables();
         }
     }
 
@@ -84,68 +86,49 @@ public class MovieDetailsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupMovieVideos() {
+    private void setupMovieDetailsPageWithObservables() {
         MovieDetailsService movieDetails = MovieClient.getMovieDetailsService();
-        Call<VideoResultsModel> videoResults = movieDetails.getMovieVideos(mMovieDetails.getMovieId(),
-                getResources().getString(R.string.api_key));
-        if (videoResults != null) {
-            videoResults.enqueue(new Callback<VideoResultsModel>() {
-                @Override
-                public void onResponse(Call<VideoResultsModel> call, Response<VideoResultsModel> response) {
-                    if (response.isSuccessful()) {
-                        Log.i(TAG, "setupMovieTrailers:onResponse:isSuccessful");
-                        mVideoResultsList = response.body().getVideos();
-                        if (mVideoResultsList != null) {
-                            isFinishedRequestingVideos = true;
-                            if (isFinishedRequestingReviews) {
-                                bindDataToAdapter(mMovieDetailsList, mVideoResultsList, mReviewResultsList);
-                            }
-                        }
-                    } else {
-                        Log.i(TAG, "setupMovieTrailers:onResponse:notSuccessful:" + response.message());
+
+        Observable<VideoResultsModel> videoObservable = movieDetails
+                .getMovieVideos(mMovieDetails.getMovieId(), mUserApiKey)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread());
+
+        Observable<ReviewResultsModel> reviewObservable = movieDetails
+                .getMovieReviews(mMovieDetails.getMovieId(), mUserApiKey)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread());
+
+        Observable<VideosAndReviewsModel> combinedResults = Observable.zip(videoObservable, reviewObservable,
+                new BiFunction<VideoResultsModel, ReviewResultsModel, VideosAndReviewsModel>() {
+                    @Override
+                    public VideosAndReviewsModel apply(VideoResultsModel videoResultsModel, ReviewResultsModel
+                            reviewResultsModel) throws Exception {
+                        return new VideosAndReviewsModel(videoResultsModel, reviewResultsModel);
                     }
-                }
+                });
 
-                @Override
-                public void onFailure(Call<VideoResultsModel> call, Throwable t) {
-                    Log.i(TAG, "setupMovieTrailers:onFailure");
-                }
-            });
-        }
-    }
+        combinedResults.subscribe(new Observer<VideosAndReviewsModel>() {
+            @Override
+            public void onNext(VideosAndReviewsModel videosAndReviewsModel) {
+                mVideoResultsList = videosAndReviewsModel.getVideoResults().getVideos();
+                mReviewResultsList = videosAndReviewsModel.getReviewResults().getReviews();
+                bindDataToAdapter(mMovieDetailsList, mVideoResultsList, mReviewResultsList);
+            }
 
-    private void setupMovieReviews() {
-        MovieDetailsService movieDetails = MovieClient.getMovieDetailsService();
-        Call<ReviewResultsModel> reviewResults = movieDetails.getMovieReviews(mMovieDetails.getMovieId(),
-                getResources().getString(R.string.api_key));
-        if (reviewResults != null) {
-            reviewResults.enqueue(new Callback<ReviewResultsModel>() {
-                @Override
-                public void onResponse(Call<ReviewResultsModel> call, Response<ReviewResultsModel> response) {
-                    if (response.isSuccessful()) {
-                        Log.i(TAG, "setupMovieReviews:onResponse:isSuccessful");
-                        mReviewResultsList = response.body().getReviews();
-                        if (mReviewResultsList != null) {
-                            isFinishedRequestingReviews = true;
-                            if (isFinishedRequestingVideos) {
-                                bindDataToAdapter(mMovieDetailsList, mVideoResultsList, mReviewResultsList);
-                            }
-                        }
-                    } else {
-                        Log.i(TAG, "setupMovieReviews:onResponse:notSuccessful: " + response.message());
-                    }
-                }
+            @Override
+            public void onError(Throwable t) {
+                Log.i(TAG, "setupMovieDetailsPageWithObservables:onError:" + t.getMessage());
+            }
 
-                @Override
-                public void onFailure(Call<ReviewResultsModel> call, Throwable t) {
-                    Log.i(TAG, "setupMovieReviews:onFailure");
-                }
-            });
-        }
-    }
+            @Override
+            public void onComplete() {
+                Log.i(TAG, "setupMovieDetailsPageWithObservables:onComplete");
+            }
 
-    private void setupMovieDetails() {
-        mMovieDetailsList.add(mMovieDetails);
+            @Override
+            public void onSubscribe(Disposable d) {}
+        });
     }
 
     private void bindDataToAdapter(ArrayList<MovieModel> detailsList,

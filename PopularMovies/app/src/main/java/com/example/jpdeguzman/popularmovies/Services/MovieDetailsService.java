@@ -4,6 +4,7 @@ import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
 import com.example.jpdeguzman.popularmovies.Models.ReviewResultsModel;
 import com.example.jpdeguzman.popularmovies.Models.VideoResultsModel;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -16,27 +17,17 @@ public interface MovieDetailsService {
     @GET("movie/top_rated")
     Call<MovieResultsModel> getTopRatedMovies(@Query("api_key") String userApiKey);
 
+//    @GET("movie/{movie_id}/videos")
+//    Call<VideoResultsModel> getMovieVideos(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);
+//
+//    @GET("movie/{movie_id}/reviews")
+//    Call<ReviewResultsModel> getMovieReviews(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);
+
     @GET("movie/{movie_id}/videos")
-    Call<VideoResultsModel> getMovieVideos(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);
+    Observable<VideoResultsModel> getMovieVideos(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);
 
     @GET("movie/{movie_id}/reviews")
-    Call<ReviewResultsModel> getMovieReviews(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);
+    Observable<ReviewResultsModel> getMovieReviews(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);
 
-    @GET("movie/{movie_id}/title")
-    String getMovieTitle();
 
-    @GET("movie/{movie_id}/poster_path")
-    String getMoviePosterPath();
-
-    @GET("movie/{movie_id}/overview")
-    String getMovieOverview();
-
-    @GET("movie/{movie_id}/vote_average")
-    Double getMovieUserRating();
-
-    @GET("movie/{movie_id}/release_date")
-    String getMovieReleaseDate();
-
-    @GET("movie/{movie_id}/backdrop_path")
-    String getMovieBackdropPath();
 }

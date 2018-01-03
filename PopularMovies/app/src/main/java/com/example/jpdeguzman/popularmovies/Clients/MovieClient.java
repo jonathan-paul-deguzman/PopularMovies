@@ -1,6 +1,7 @@
 package com.example.jpdeguzman.popularmovies.Clients;
 
 import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -16,6 +17,7 @@ public class MovieClient {
         return new Retrofit.Builder()
                 .baseUrl(NETWORK_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
     }
 
