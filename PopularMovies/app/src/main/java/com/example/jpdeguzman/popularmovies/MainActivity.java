@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -80,7 +81,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onResume();
         if (getIntent().getExtras() != null) {
             String savedMovieType = getIntent().getExtras().getString(Movies.MOVIE_TYPE_SAVED);
-            loadSavedMovieTypeIntoRecyclerView(savedMovieType);
+            if (!TextUtils.isEmpty(savedMovieType)) {
+                loadSavedMovieTypeIntoRecyclerView(savedMovieType);
+            }
         } else {
             loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
         }
@@ -184,9 +187,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public void OnItemClick(int position) {
         MovieModel movieSelected = mMovieResultsList.get(position);
-        String movieId = Integer.toString(movieSelected.getMovieId());
+        int movieId = movieSelected.getMovieId();
         for (int i = 0; i < mFavoriteMoviesList.size(); i++) {
-            if (movieId.equals(mFavoriteMoviesList.get(i).getMovieId())) {
+            if (movieId == mFavoriteMoviesList.get(i).getMovieId()) {
                 movieSelected.setFavorite(true);
             }
         }
@@ -230,10 +233,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     private void loadSavedMovieTypeIntoRecyclerView(String savedMovieType) {
-        if (savedMovieType == Movies.MOVIE_TYPE_FAVORITE) {
+        if (savedMovieType.equals(Movies.MOVIE_TYPE_FAVORITE)) {
             loadFavoriteMoviesIntoRecyclerView();
-        } else if (savedMovieType == Movies.MOVIE_TYPE_POPULAR
-                || savedMovieType == Movies.MOVIE_TYPE_TOP_RATED) {
+        } else if (savedMovieType.equals(Movies.MOVIE_TYPE_POPULAR)
+                || savedMovieType.equals(Movies.MOVIE_TYPE_TOP_RATED)) {
             loadMoviesByType(savedMovieType);
         } else {
             loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
@@ -255,7 +258,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE));
         String backdropPathIndex = cursor.getString(cursor.getColumnIndex(
                 FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH));
-
         return new MovieModel(movieIdIndex, overviewIndex, posterPathIndex, titleIndex,
                 userRatingIndex, releaseDateIndex, backdropPathIndex, true);
     }
@@ -317,6 +319,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             mFavoriteMoviesList.add(favoriteMovie);
             mFavoriteMovieAdapter = new FavoriteMovieAdapter(this, this, mFavoriteMoviesList);
             mMoviePosterRecyclerView.setAdapter(mFavoriteMovieAdapter);
+        }
+
+        if (mFavoriteMovieAdapter != null) {
+            mFavoriteMovieAdapter.notifyDataSetChanged();
         }
     }
 
