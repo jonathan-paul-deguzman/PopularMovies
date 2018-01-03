@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -24,9 +27,7 @@ import com.example.jpdeguzman.popularmovies.Constants.Movies;
 import com.example.jpdeguzman.popularmovies.Data.FavoriteMoviesContract;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
-import com.example.jpdeguzman.popularmovies.Services.FavoriteMoviesTask;
 import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
-import com.example.jpdeguzman.popularmovies.Services.OnEventListener;
 
 import java.util.ArrayList;
 
@@ -43,7 +44,7 @@ import retrofit2.Response;
  * selected movie.
  */
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler,
-        FavoriteMovieAdapter.FavoriteMovieAdapterOnClickHandler {
+        FavoriteMovieAdapter.FavoriteMovieAdapterOnClickHandler, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @BindView(R.id.rv_movie_posters) RecyclerView mMoviePosterRecyclerView;
 
     private String mCurrentMovieType;
+
+    private FavoriteMovieAdapter mFavoriteMovieAdapter;
 
     private ArrayList<MovieModel> mMovieResultsList = new ArrayList<>();
 
@@ -62,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        getFavoriteMovies();
+        getSupportLoaderManager().initLoader(1, null, this).forceLoad();
 
         if (savedInstanceState != null) {
             String savedMovieType = savedInstanceState.getString(Movies.MOVIE_TYPE_SAVED);
@@ -75,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     protected void onResume() {
         super.onResume();
-        getFavoriteMovies();
         if (getIntent().getExtras() != null) {
             String savedMovieType = getIntent().getExtras().getString(Movies.MOVIE_TYPE_SAVED);
             loadSavedMovieTypeIntoRecyclerView(savedMovieType);
@@ -222,9 +224,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         GridLayoutManager gridLayoutManager =
                 new GridLayoutManager(this, Movies.MOVIE_POSTERS_DEFAULT_NUMBER_OF_COLUMNS);
         mMoviePosterRecyclerView.setLayoutManager(gridLayoutManager);
-        FavoriteMovieAdapter favoriteMovieAdapter =
+        mFavoriteMovieAdapter =
                 new FavoriteMovieAdapter(this, this, mFavoriteMoviesList);
-        mMoviePosterRecyclerView.setAdapter(favoriteMovieAdapter);
+        mMoviePosterRecyclerView.setAdapter(mFavoriteMovieAdapter);
     }
 
     private void loadSavedMovieTypeIntoRecyclerView(String savedMovieType) {
@@ -258,39 +260,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 userRatingIndex, releaseDateIndex, backdropPathIndex, true);
     }
 
-
-    private void getFavoriteMovies() {
-        FavoriteMoviesTask favoriteMoviesTask =
-                new FavoriteMoviesTask(this, new OnEventListener<Cursor>() {
-                    @Override
-                    public void onSuccess(Cursor data) {
-                        Log.i(TAG, "getFavoriteMovies:onSuccess");
-                        if (mFavoriteMoviesList != null) {
-                            mFavoriteMoviesList.clear();
-                        }
-
-                        Cursor cursor = null;
-                        try {
-                            cursor = data;
-                            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                                MovieModel favoriteMovie = populateMovieWithCursorData(cursor);
-                                mFavoriteMoviesList.add(favoriteMovie);
-                            }
-                        } finally {
-                            if (cursor != null) {
-                                cursor.close();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-                        Log.e(TAG, "getFavoriteMovies:onFailure:" + e.getMessage());
-                    }
-                });
-        favoriteMoviesTask.execute();
-    }
-
     /**
      * Responsible for determining if the device is connected to a network
      *
@@ -318,4 +287,39 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 })
                 .show();
     }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        try {
+            return new CursorLoader(
+                    this,
+                    FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+        } catch (Exception e) {
+            Log.e(TAG, "onCreateLoader:" + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (mFavoriteMoviesList != null) {
+            mFavoriteMoviesList.clear();
+        }
+
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            MovieModel favoriteMovie = populateMovieWithCursorData(cursor);
+            mFavoriteMoviesList.add(favoriteMovie);
+            mFavoriteMovieAdapter = new FavoriteMovieAdapter(this, this, mFavoriteMoviesList);
+            mMoviePosterRecyclerView.setAdapter(mFavoriteMovieAdapter);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) { }
 }

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.example.jpdeguzman.popularmovies.Adapters.FavoriteMovieAdapter;
 import com.example.jpdeguzman.popularmovies.Constants.Images;
 import com.example.jpdeguzman.popularmovies.Data.FavoriteMoviesContract;
+import com.example.jpdeguzman.popularmovies.MainActivity;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.R;
 import com.squareup.picasso.Picasso;
