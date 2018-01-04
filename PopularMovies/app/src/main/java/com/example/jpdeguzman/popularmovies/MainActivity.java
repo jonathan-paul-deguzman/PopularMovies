@@ -53,9 +53,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @BindView(R.id.rv_movie_posters) RecyclerView mMoviePosterRecyclerView;
 
-    private String mCurrentMovieType;
-
     private FavoriteMovieAdapter mFavoriteMovieAdapter;
+
+    private String mCurrentMovieType = Movies.MOVIE_TYPE_DEFAULT;
 
     private ArrayList<MovieModel> mMovieResultsList = new ArrayList<>();
 
@@ -70,7 +70,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         if (savedInstanceState != null) {
             String savedMovieType = savedInstanceState.getString(Movies.MOVIE_TYPE_SAVED);
-            loadSavedMovieTypeIntoRecyclerView(savedMovieType);
+            if (!TextUtils.isEmpty(savedMovieType)) {
+                loadSavedMovieTypeIntoRecyclerView(savedMovieType);
+            } else {
+                loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
+            }
         } else {
             loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
         }
@@ -83,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             String savedMovieType = getIntent().getExtras().getString(Movies.MOVIE_TYPE_SAVED);
             if (!TextUtils.isEmpty(savedMovieType)) {
                 loadSavedMovieTypeIntoRecyclerView(savedMovieType);
+            } else {
+                loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
             }
         } else {
             loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
