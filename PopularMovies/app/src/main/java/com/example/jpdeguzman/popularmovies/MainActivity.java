@@ -2,9 +2,11 @@ package com.example.jpdeguzman.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -13,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,11 +50,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private static final String CURRENT_SCROLL_POSITION = "currentScrollPosition";
+
+    private static final String CURRENT_SCROLL_OFFSET = "currentScrollOffset";
+
     @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingProgressBar;
 
     @BindView(R.id.rv_movie_posters) RecyclerView mMoviePosterRecyclerView;
 
     private FavoriteMovieAdapter mFavoriteMovieAdapter;
+
+    private GridLayoutManager mGridLayoutManager;
+
+    private int mCurrentScrollPosition;
+
+    private int mCurrentScrollOffset;
 
     private String mCurrentMovieType = Movies.MOVIE_TYPE_DEFAULT;
 
@@ -67,44 +78,30 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         getSupportLoaderManager().initLoader(1, null, this).forceLoad();
-
-        if (savedInstanceState != null) {
-            String savedMovieType = savedInstanceState.getString(Movies.MOVIE_TYPE_SAVED);
-            if (!TextUtils.isEmpty(savedMovieType)) {
-                loadSavedMovieTypeIntoRecyclerView(savedMovieType);
-            } else {
-                loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
-            }
-        } else {
-            loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (getIntent().getExtras() != null) {
-            String savedMovieType = getIntent().getExtras().getString(Movies.MOVIE_TYPE_SAVED);
-            if (!TextUtils.isEmpty(savedMovieType)) {
-                loadSavedMovieTypeIntoRecyclerView(savedMovieType);
-            } else {
-                loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
-            }
-        } else {
-            loadMoviesByType(Movies.MOVIE_TYPE_DEFAULT);
-        }
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mCurrentScrollPosition = preferences.getInt(CURRENT_SCROLL_POSITION, 0);
+        mCurrentScrollOffset = preferences.getInt(CURRENT_SCROLL_OFFSET, 0);
+        String savedMovieType = preferences.getString(Movies.MOVIE_TYPE_SAVED, Movies.MOVIE_TYPE_POPULAR);
+        loadSavedMovieTypeIntoRecyclerView(savedMovieType);
     }
 
     @Override
-    protected void onStop() {
-        getIntent().putExtra(Movies.MOVIE_TYPE_SAVED, mCurrentMovieType);
-        super.onStop();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putString(Movies.MOVIE_TYPE_SAVED, mCurrentMovieType);
-        super.onSaveInstanceState(outState);
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        View firstChildInView = mMoviePosterRecyclerView.getChildAt(0);
+        int currentScrollPosition = mMoviePosterRecyclerView.getChildAdapterPosition(firstChildInView);
+        int currentScrollOffset = firstChildInView.getTop();
+        preferences.edit()
+                .putInt(CURRENT_SCROLL_POSITION, currentScrollPosition)
+                .putInt(CURRENT_SCROLL_OFFSET, currentScrollOffset)
+                .putString(Movies.MOVIE_TYPE_SAVED, mCurrentMovieType)
+                .apply();
     }
 
     @Override
@@ -222,20 +219,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     private void loadMoviePostersIntoRecyclerView() {
-        GridLayoutManager gridLayoutManager =
-                new GridLayoutManager(this, Movies.MOVIE_POSTERS_DEFAULT_NUMBER_OF_COLUMNS);
-        mMoviePosterRecyclerView.setLayoutManager(gridLayoutManager);
+        mGridLayoutManager = new GridLayoutManager(this, Movies.MOVIE_POSTERS_DEFAULT_NUMBER_OF_COLUMNS);
+        mMoviePosterRecyclerView.setLayoutManager(mGridLayoutManager);
         MovieAdapter movieAdapter = new MovieAdapter(this, this, mMovieResultsList);
         mMoviePosterRecyclerView.setAdapter(movieAdapter);
+        mMoviePosterRecyclerView.scrollToPosition(mCurrentScrollPosition);
+        mMoviePosterRecyclerView.scrollBy(0, - mCurrentScrollOffset);
     }
 
     private void loadFavoriteMoviesIntoRecyclerView() {
-        GridLayoutManager gridLayoutManager =
-                new GridLayoutManager(this, Movies.MOVIE_POSTERS_DEFAULT_NUMBER_OF_COLUMNS);
-        mMoviePosterRecyclerView.setLayoutManager(gridLayoutManager);
-        mFavoriteMovieAdapter =
-                new FavoriteMovieAdapter(this, this, mFavoriteMoviesList);
+        mGridLayoutManager = new GridLayoutManager(this, Movies.MOVIE_POSTERS_DEFAULT_NUMBER_OF_COLUMNS);
+        mMoviePosterRecyclerView.setLayoutManager(mGridLayoutManager);
+        mFavoriteMovieAdapter = new FavoriteMovieAdapter(this, this, mFavoriteMoviesList);
         mMoviePosterRecyclerView.setAdapter(mFavoriteMovieAdapter);
+        mMoviePosterRecyclerView.scrollToPosition(mCurrentScrollPosition);
+        mMoviePosterRecyclerView.scrollBy(0, - mCurrentScrollOffset);
     }
 
     private void loadSavedMovieTypeIntoRecyclerView(String savedMovieType) {
