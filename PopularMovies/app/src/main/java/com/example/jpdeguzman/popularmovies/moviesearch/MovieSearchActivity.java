@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.jpdeguzman.popularmovies.R;
+import com.example.jpdeguzman.popularmovies.utils.ApplicationContext;
 
 /**
  * Created by jpdeguzman on 1/5/18.

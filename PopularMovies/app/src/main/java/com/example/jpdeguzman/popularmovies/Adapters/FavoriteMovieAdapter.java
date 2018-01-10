@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.example.jpdeguzman.popularmovies.Constants.Images;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.R;
+import com.example.jpdeguzman.popularmovies.utils.ApplicationContext;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -29,9 +30,9 @@ public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdap
         void OnFavoriteItemClick(int position);
     }
 
-    public FavoriteMovieAdapter(Context context, ArrayList<MovieModel> favoriteMovieList,
+    public FavoriteMovieAdapter(ArrayList<MovieModel> favoriteMovieList,
                                 FavoriteMovieAdapterOnClickHandler clickHandler) {
-        mContext = context;
+        mContext = ApplicationContext.getContext();
         mFavoriteMovieList = favoriteMovieList;
         mClickHandler = clickHandler;
     }

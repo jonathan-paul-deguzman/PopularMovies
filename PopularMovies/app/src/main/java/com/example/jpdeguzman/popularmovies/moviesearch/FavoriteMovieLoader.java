@@ -6,6 +6,7 @@ import android.support.v4.content.AsyncTaskLoader;
 
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.data.database.FavoriteMovieContract.FavoriteMovieEntry;
+import com.example.jpdeguzman.popularmovies.utils.ApplicationContext;
 
 import java.util.ArrayList;
 
@@ -15,17 +16,14 @@ import java.util.ArrayList;
 
 public class FavoriteMovieLoader extends AsyncTaskLoader<ArrayList<MovieModel>> {
 
-    private Context mContext;
-
     public FavoriteMovieLoader(Context context) {
         super(context);
-        mContext = context;
     }
 
     @Override
     public ArrayList<MovieModel> loadInBackground() {
         try {
-            Cursor cursor = mContext.getContentResolver().query(
+            Cursor cursor = ApplicationContext.getContext().getContentResolver().query(
                     FavoriteMovieEntry.CONTENT_URI,
                     null,
                     null,

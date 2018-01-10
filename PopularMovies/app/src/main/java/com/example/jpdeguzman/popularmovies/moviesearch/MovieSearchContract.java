@@ -29,7 +29,9 @@ public interface MovieSearchContract {
 
         void loadMovies(MovieSearchType movieType);
 
-        boolean checkNetworkAvailable();
+        void loadFavoriteMovies(ArrayList<MovieModel> favoriteMovies);
+
+        boolean isNetworkAvailable();
 
         void moviePosterItemClicked(int position);
     }

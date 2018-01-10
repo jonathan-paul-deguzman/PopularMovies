@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private void loadFavoriteMoviesIntoRecyclerView() {
         mGridLayoutManager = new GridLayoutManager(this, Movies.MOVIE_POSTERS_DEFAULT_NUMBER_OF_COLUMNS);
         mMoviePosterRecyclerView.setLayoutManager(mGridLayoutManager);
-        mFavoriteMovieAdapter = new FavoriteMovieAdapter(this, mFavoriteMoviesList, this);
+        mFavoriteMovieAdapter = new FavoriteMovieAdapter(mFavoriteMoviesList, this);
         mMoviePosterRecyclerView.setAdapter(mFavoriteMovieAdapter);
         mMoviePosterRecyclerView.scrollToPosition(mCurrentScrollPosition);
         mMoviePosterRecyclerView.scrollBy(0, - mCurrentScrollOffset);
@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             MovieModel favoriteMovie = populateMovieWithCursorData(cursor);
             mFavoriteMoviesList.add(favoriteMovie);
-            mFavoriteMovieAdapter = new FavoriteMovieAdapter(this, mFavoriteMoviesList, this);
+            mFavoriteMovieAdapter = new FavoriteMovieAdapter(mFavoriteMoviesList, this);
             mMoviePosterRecyclerView.setAdapter(mFavoriteMovieAdapter);
         }
 

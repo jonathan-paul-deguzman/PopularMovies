@@ -118,7 +118,7 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
     }
 
     private void notifyAdapterThatFavoritesDatabaseHasChanged() {
-        FavoriteMovieAdapter favoriteMovieAdapter = new FavoriteMovieAdapter(context, null, null);
+        FavoriteMovieAdapter favoriteMovieAdapter = new FavoriteMovieAdapter(null, null);
         favoriteMovieAdapter.notifyDataSetChanged();
     }
 }

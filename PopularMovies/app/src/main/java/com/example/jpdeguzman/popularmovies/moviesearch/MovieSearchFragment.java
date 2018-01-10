@@ -37,13 +37,16 @@ import butterknife.ButterKnife;
  * popular, top rated, or favorite. Clicking on a poster will launch the MovieDetailsActivity.
  */
 public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieAdapterOnClickHandler,
-        FavoriteMovieAdapter.FavoriteMovieAdapterOnClickHandler, MovieSearchContract.View {
+        FavoriteMovieAdapter.FavoriteMovieAdapterOnClickHandler, MovieSearchContract.View,
+        LoaderManager.LoaderCallbacks<ArrayList<MovieModel>> {
 
     private static final int NUMBER_OF_GRID_COLUMNS = 2;
 
     private MovieSearchContract.Presenter mPresenter;
 
     private MovieSearchType mCurrentMovieSearchType;
+
+    private ArrayList<MovieModel> mFavoriteMoviesList = new ArrayList<>();
 
     @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingProgressBar;
 
@@ -60,6 +63,7 @@ public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieA
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mPresenter = new MovieSearchPresenter(this);
+        getLoaderManager().initLoader(1001, null, this);
     }
 
     @Nullable
@@ -85,15 +89,17 @@ public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieA
         switch (item.getItemId()) {
             case R.id.menu_sort_by_popular:
                 mCurrentMovieSearchType = MovieSearchType.MOVIE_TYPE_POPULAR;
+                mPresenter.loadMovies(mCurrentMovieSearchType);
                 break;
             case R.id.menu_sort_by_top_rated:
                 mCurrentMovieSearchType = MovieSearchType.MOVIE_TYPE_TOP_RATED;
+                mPresenter.loadMovies(mCurrentMovieSearchType);
                 break;
             case R.id.menu_sort_by_favorites:
                 mCurrentMovieSearchType = MovieSearchType.MOVIE_TYPE_FAVORITE;
+                mPresenter.loadFavoriteMovies(mFavoriteMoviesList);
                 break;
         }
-        mPresenter.loadMovies(mCurrentMovieSearchType);
         return true;
     }
 
@@ -112,8 +118,8 @@ public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieA
     public void showFavoriteMovies(ArrayList<MovieModel> favoriteMovieList) {
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), NUMBER_OF_GRID_COLUMNS);
         mMoviePostersRecyclerView.setLayoutManager(layoutManager);
-//        FavoriteMovieAdapter adapter = new FavoriteMovieAdapter(mContext, favoriteMovieList, this);
-//        mMoviePostersRecyclerView.setAdapter(adapter);
+        FavoriteMovieAdapter adapter = new FavoriteMovieAdapter(favoriteMovieList, this);
+        mMoviePostersRecyclerView.setAdapter(adapter);
     }
 
     public void showLoadingProgressBar() {
@@ -126,9 +132,10 @@ public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieA
 
     public void showNoNetworkConnection() {
         View view = getActivity().findViewById(R.id.movie_search_activity_layout);
-        Snackbar.make(view, getResources().getString(R.string.error_no_network_connection),
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction("RETRY", new View.OnClickListener() {
+        String snackBarActionMessage = getResources().getString(R.string.error_retry);
+        String snackBarErrorMessage = getResources().getString(R.string.error_no_network_connection);
+        Snackbar.make(view, snackBarErrorMessage, Snackbar.LENGTH_INDEFINITE)
+                .setAction(snackBarActionMessage, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         mPresenter.loadMovies(mCurrentMovieSearchType);
@@ -143,6 +150,21 @@ public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieA
 
     @Override
     public void OnFavoriteItemClick(int position) {
+
+    }
+
+    @Override
+    public Loader<ArrayList<MovieModel>> onCreateLoader(int id, Bundle args) {
+        return new FavoriteMovieLoader(ApplicationContext.getContext());
+    }
+
+    @Override
+    public void onLoadFinished(Loader<ArrayList<MovieModel>> loader, ArrayList<MovieModel> data) {
+        mFavoriteMoviesList = data;
+    }
+
+    @Override
+    public void onLoaderReset(Loader<ArrayList<MovieModel>> loader) {
 
     }
 }

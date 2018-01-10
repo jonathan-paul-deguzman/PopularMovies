@@ -4,6 +4,9 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
@@ -44,13 +47,13 @@ public class MovieSearchPresenter implements MovieSearchContract.Presenter {
                         ArrayList<MovieModel> movieResultsList = response.body().getMovies();
                         mMoviesView.showMovies(movieResultsList);
                     } else {
-                        Log.e(TAG, "presenter:loadMovies:notSuccessful:" + response.message());
+                        Log.e(TAG, "loadMovies:notSuccessful:" + response.message());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<MovieResultsModel> call, Throwable t) {
-                    if (!checkNetworkAvailable()) {
+                    if (!isNetworkAvailable()) {
                         Log.e(TAG, "loadMovies:onFailure:noNetworkConnection");
                         mMoviesView.showNoNetworkConnection();
                     }
@@ -60,7 +63,22 @@ public class MovieSearchPresenter implements MovieSearchContract.Presenter {
     }
 
     @Override
-    public boolean checkNetworkAvailable() {
+    public void loadFavoriteMovies(ArrayList<MovieModel> favoriteMovies) {
+        mMoviesView.showFavoriteMovies(favoriteMovies);
+    }
+
+    public boolean isFavoriteMovie(MovieModel movieSelected, ArrayList<MovieModel> favoriteMovies) {
+        int movieId = movieSelected.getMovieId();
+        for (int i = 0; i < favoriteMovies.size(); i++) {
+            if (movieId == favoriteMovies.get(i).getMovieId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isNetworkAvailable() {
         Context context =  ApplicationContext.getContext();
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);

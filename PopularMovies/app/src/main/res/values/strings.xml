@@ -21,4 +21,5 @@
     <!-- Error messages -->
     <string name="error_no_network_connection">
         There is no network connection, please restart the app after connection is established</string>
+    <string name="error_retry">RETRY</string>
 </resources>
