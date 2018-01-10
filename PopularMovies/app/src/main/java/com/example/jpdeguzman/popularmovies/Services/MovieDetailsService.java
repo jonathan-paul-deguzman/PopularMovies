@@ -17,11 +17,8 @@ public interface MovieDetailsService {
     @GET("movie/top_rated")
     Call<MovieResultsModel> getTopRatedMovies(@Query("api_key") String userApiKey);
 
-//    @GET("movie/{movie_id}/videos")
-//    Call<VideoResultsModel> getMovieVideos(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);
-//
-//    @GET("movie/{movie_id}/reviews")
-//    Call<ReviewResultsModel> getMovieReviews(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);
+    @GET("movie/{sort_by}")
+    Call<MovieResultsModel> getMovies(@Path("sort_by") String sortBy, @Query("api_key") String userApiKey);
 
     @GET("movie/{movie_id}/videos")
     Observable<VideoResultsModel> getMovieVideos(@Path("movie_id") int movieId, @Query("api_key") String userApiKey);

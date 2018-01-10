@@ -26,7 +26,7 @@ import com.example.jpdeguzman.popularmovies.Adapters.FavoriteMovieAdapter;
 import com.example.jpdeguzman.popularmovies.Adapters.MovieAdapter;
 import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
 import com.example.jpdeguzman.popularmovies.Constants.Movies;
-import com.example.jpdeguzman.popularmovies.Data.FavoriteMoviesContract;
+import com.example.jpdeguzman.popularmovies.data.database.FavoriteMovieContract;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
 import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private void loadMoviePostersIntoRecyclerView() {
         mGridLayoutManager = new GridLayoutManager(this, Movies.MOVIE_POSTERS_DEFAULT_NUMBER_OF_COLUMNS);
         mMoviePosterRecyclerView.setLayoutManager(mGridLayoutManager);
-        MovieAdapter movieAdapter = new MovieAdapter(this, this, mMovieResultsList);
+        MovieAdapter movieAdapter = new MovieAdapter(mMovieResultsList, this);
         mMoviePosterRecyclerView.setAdapter(movieAdapter);
         mMoviePosterRecyclerView.scrollToPosition(mCurrentScrollPosition);
         mMoviePosterRecyclerView.scrollBy(0, - mCurrentScrollOffset);
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private void loadFavoriteMoviesIntoRecyclerView() {
         mGridLayoutManager = new GridLayoutManager(this, Movies.MOVIE_POSTERS_DEFAULT_NUMBER_OF_COLUMNS);
         mMoviePosterRecyclerView.setLayoutManager(mGridLayoutManager);
-        mFavoriteMovieAdapter = new FavoriteMovieAdapter(this, this, mFavoriteMoviesList);
+        mFavoriteMovieAdapter = new FavoriteMovieAdapter(this, mFavoriteMoviesList, this);
         mMoviePosterRecyclerView.setAdapter(mFavoriteMovieAdapter);
         mMoviePosterRecyclerView.scrollToPosition(mCurrentScrollPosition);
         mMoviePosterRecyclerView.scrollBy(0, - mCurrentScrollOffset);
@@ -249,19 +249,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private MovieModel populateMovieWithCursorData(Cursor cursor) {
         int movieIdIndex = cursor.getInt(cursor.getColumnIndex(
-                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID));
+                FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_ID));
         String overviewIndex = cursor.getString(cursor.getColumnIndex(
-                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_OVERVIEW));
+                FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_OVERVIEW));
         String posterPathIndex = cursor.getString(cursor.getColumnIndex(
-                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH));
+                FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH));
         String titleIndex = cursor.getString(cursor.getColumnIndex(
-                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_TITLE));
+                FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_TITLE));
         String userRatingIndex = cursor.getString(cursor.getColumnIndex(
-                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_USER_RATING));
+                FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_USER_RATING));
         String releaseDateIndex = cursor.getString(cursor.getColumnIndex(
-                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE));
+                FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE));
         String backdropPathIndex = cursor.getString(cursor.getColumnIndex(
-                FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH));
+                FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH));
         return new MovieModel(movieIdIndex, overviewIndex, posterPathIndex, titleIndex,
                 userRatingIndex, releaseDateIndex, backdropPathIndex, true);
     }
@@ -299,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         try {
             return new CursorLoader(
                     this,
-                    FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI,
+                    FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI,
                     null,
                     null,
                     null,
@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             MovieModel favoriteMovie = populateMovieWithCursorData(cursor);
             mFavoriteMoviesList.add(favoriteMovie);
-            mFavoriteMovieAdapter = new FavoriteMovieAdapter(this, this, mFavoriteMoviesList);
+            mFavoriteMovieAdapter = new FavoriteMovieAdapter(this, mFavoriteMoviesList, this);
             mMoviePosterRecyclerView.setAdapter(mFavoriteMovieAdapter);
         }
 

@@ -1,4 +1,4 @@
-package com.example.jpdeguzman.popularmovies.Data;
+package com.example.jpdeguzman.popularmovies.data.database;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -6,7 +6,7 @@ import android.provider.BaseColumns;
 /**
  * Contract for creating the favorites table and columns
  */
-public class FavoriteMoviesContract {
+public class FavoriteMovieContract {
 
     public static final String SCHEME = "content://";
 
@@ -20,15 +20,11 @@ public class FavoriteMoviesContract {
      * Represents the database table with its respective columns
      */
     public static final class FavoriteMovieEntry implements BaseColumns {
-        /*
-         *  CONTENT_URI will represent <scheme> :// <authority> / <path>
-         */
+        // CONTENT_URI will represent <scheme> :// <authority> / <path>
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES).build();
 
-        /*
-         *  Favorites table and column names
-         */
+        // Favorites table and column names
         public static final String TABLE_NAME = "favorites";
         public static final String COLUMN_MOVIE_ID = "movieId";
         public static final String COLUMN_MOVIE_POSTER_PATH = "posterPath";

@@ -29,11 +29,11 @@ public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdap
         void OnFavoriteItemClick(int position);
     }
 
-    public FavoriteMovieAdapter(Context context, FavoriteMovieAdapterOnClickHandler clickHandler,
-                                ArrayList<MovieModel> favoriteMovieList) {
-        mClickHandler = clickHandler;
+    public FavoriteMovieAdapter(Context context, ArrayList<MovieModel> favoriteMovieList,
+                                FavoriteMovieAdapterOnClickHandler clickHandler) {
         mContext = context;
         mFavoriteMovieList = favoriteMovieList;
+        mClickHandler = clickHandler;
     }
 
     @Override

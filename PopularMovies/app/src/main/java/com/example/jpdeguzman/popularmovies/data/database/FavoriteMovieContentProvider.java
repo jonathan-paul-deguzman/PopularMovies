@@ -1,4 +1,4 @@
-package com.example.jpdeguzman.popularmovies.Data;
+package com.example.jpdeguzman.popularmovies.data.database;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -26,10 +26,10 @@ public class FavoriteMovieContentProvider extends ContentProvider {
 
     public static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(FavoriteMoviesContract.AUTHORITY,
-                FavoriteMoviesContract.PATH_FAVORITES, FAVORITES);
-        uriMatcher.addURI(FavoriteMoviesContract.AUTHORITY,
-                FavoriteMoviesContract.PATH_FAVORITES + "/#", FAVORITES_WITH_ID);
+        uriMatcher.addURI(FavoriteMovieContract.AUTHORITY,
+                FavoriteMovieContract.PATH_FAVORITES, FAVORITES);
+        uriMatcher.addURI(FavoriteMovieContract.AUTHORITY,
+                FavoriteMovieContract.PATH_FAVORITES + "/#", FAVORITES_WITH_ID);
         return uriMatcher;
     }
 
@@ -51,7 +51,7 @@ public class FavoriteMovieContentProvider extends ContentProvider {
         switch (match) {
             case FAVORITES:
                 retCursor = db.query(
-                        FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                        FavoriteMovieContract.FavoriteMovieEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -70,7 +70,7 @@ public class FavoriteMovieContentProvider extends ContentProvider {
                 String[] mSelectionArgs = new String[]{movieId};
 
                 retCursor = db.query(
-                        FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                        FavoriteMovieContract.FavoriteMovieEntry.TABLE_NAME,
                         projection,
                         mSelection,
                         mSelectionArgs,
@@ -102,10 +102,10 @@ public class FavoriteMovieContentProvider extends ContentProvider {
         switch (match) {
             case FAVORITES:
                 long id = db.insert(
-                        FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME, null, values);
+                        FavoriteMovieContract.FavoriteMovieEntry.TABLE_NAME, null, values);
                 if (id > 0) {
                     retUri = ContentUris.withAppendedId(
-                            FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI, id);
+                            FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI, id);
                 } else {
                     throw new SQLException("Failed to insert row into " + uri);
                 }
@@ -132,7 +132,7 @@ public class FavoriteMovieContentProvider extends ContentProvider {
         switch (match) {
             case FAVORITES:
                 rowsDeleted = db.delete(
-                        FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                        FavoriteMovieContract.FavoriteMovieEntry.TABLE_NAME,
                         null,
                         null
                 );
@@ -146,7 +146,7 @@ public class FavoriteMovieContentProvider extends ContentProvider {
                 String[] mSelectionArgs = new String[]{movieId};
 
                 rowsDeleted = db.delete(
-                        FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                        FavoriteMovieContract.FavoriteMovieEntry.TABLE_NAME,
                         mSelection,
                         mSelectionArgs
                 );
@@ -180,7 +180,7 @@ public class FavoriteMovieContentProvider extends ContentProvider {
                 String[] mSelectionArgs = new String[]{id};
 
                 favoritesUpdated = db.update(
-                        FavoriteMoviesContract.FavoriteMovieEntry.TABLE_NAME,
+                        FavoriteMovieContract.FavoriteMovieEntry.TABLE_NAME,
                         values,
                         mSelection,
                         mSelectionArgs

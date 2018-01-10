@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.example.jpdeguzman.popularmovies.Constants.Images;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.R;
+import com.example.jpdeguzman.popularmovies.utils.ApplicationContext;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -29,8 +30,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         void OnItemClick(int position);
     }
 
-    public MovieAdapter(Context context, MovieAdapterOnClickHandler listener, ArrayList<MovieModel> movieList) {
-        mContext = context;
+    public MovieAdapter(ArrayList<MovieModel> movieList, MovieAdapterOnClickHandler listener) {
+        mContext = ApplicationContext.getContext();
         mClickListener = listener;
         mMovieList = movieList;
     }

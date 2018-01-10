@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.example.jpdeguzman.popularmovies.Adapters.FavoriteMovieAdapter;
 import com.example.jpdeguzman.popularmovies.Constants.Images;
-import com.example.jpdeguzman.popularmovies.Data.FavoriteMoviesContract;
+import com.example.jpdeguzman.popularmovies.data.database.FavoriteMovieContract;
 import com.example.jpdeguzman.popularmovies.Models.MovieModel;
 import com.example.jpdeguzman.popularmovies.R;
 import com.squareup.picasso.Picasso;
@@ -91,27 +91,27 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
 
     private void insertFavoriteMovie(MovieModel favoriteMovie) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_ID,
+        contentValues.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_ID,
                 favoriteMovie.getMovieId());
-        contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH,
+        contentValues.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_POSTER_PATH,
                 favoriteMovie.getMoviePosterPath());
-        contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH,
+        contentValues.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_BACKDROP_PATH,
                 favoriteMovie.getMovieBackdropPath());
-        contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_TITLE,
+        contentValues.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_TITLE,
                 favoriteMovie.getMovieTitle());
-        contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_USER_RATING,
+        contentValues.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_USER_RATING,
                 favoriteMovie.getMovieUserRating());
-        contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE,
+        contentValues.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE,
                 favoriteMovie.getMovieReleaseDate());
-        contentValues.put(FavoriteMoviesContract.FavoriteMovieEntry.COLUMN_MOVIE_OVERVIEW,
+        contentValues.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_OVERVIEW,
                 favoriteMovie.getMovieOverview());
-        context.getContentResolver().insert(FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI,
+        context.getContentResolver().insert(FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI,
                 contentValues);
         notifyAdapterThatFavoritesDatabaseHasChanged();
     }
 
     private void removeFavoriteMovie(MovieModel favoriteMovie) {
-        Uri uri = FavoriteMoviesContract.FavoriteMovieEntry.CONTENT_URI;
+        Uri uri = FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI;
         uri = uri.buildUpon().appendPath(Integer.toString(favoriteMovie.getMovieId())).build();
         context.getContentResolver().delete(uri, null, null);
         notifyAdapterThatFavoritesDatabaseHasChanged();
