@@ -1,16 +1,15 @@
 package com.example.jpdeguzman.popularmovies.moviesearch;
 
-import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.util.Log;
 
-import com.example.jpdeguzman.popularmovies.Models.MovieModel;
-import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
+import com.example.jpdeguzman.popularmovies.data.constants.MovieConstants;
+import com.example.jpdeguzman.popularmovies.data.models.MovieModel;
+import com.example.jpdeguzman.popularmovies.data.models.MovieResultsModel;
+import com.example.jpdeguzman.popularmovies.moviedetails.MovieDetailsActivity;
 import com.example.jpdeguzman.popularmovies.utils.ApplicationContext;
 
 import java.util.ArrayList;
@@ -20,9 +19,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
- * Created by jpdeguzman on 1/5/18.
+ * Hosts the business logic associated with the movie search feature, and the corresponding commands
+ * for the view's UI elements.
  */
-
 public class MovieSearchPresenter implements MovieSearchContract.Presenter {
 
     private static final String TAG = MovieSearchPresenter.class.getSimpleName();
@@ -33,8 +32,15 @@ public class MovieSearchPresenter implements MovieSearchContract.Presenter {
         mMoviesView = moviesView;
     }
 
+    public void launchMovieDetailsIntent(MovieModel selectedMovie) {
+        Context context = ApplicationContext.getContext();
+        Intent movieDetailsIntent = new Intent(context, MovieDetailsActivity.class);
+        movieDetailsIntent.putExtra(MovieConstants.MOVIE_EXTRA, selectedMovie);
+        context.startActivity(movieDetailsIntent);
+    }
+
     @Override
-    public void loadMovies(MovieSearchType movieType) {
+    public void loadMovies(String movieType) {
         mMoviesView.showLoadingProgressBar();
         Call<MovieResultsModel> movieResults = new LoadMoviesInteractorImpl().loadMoviesByType(movieType);
         if (movieResults != null) {
@@ -53,8 +59,8 @@ public class MovieSearchPresenter implements MovieSearchContract.Presenter {
 
                 @Override
                 public void onFailure(Call<MovieResultsModel> call, Throwable t) {
+                    Log.e(TAG, "loadMovies:onFailure:" + t.getMessage());
                     if (!isNetworkAvailable()) {
-                        Log.e(TAG, "loadMovies:onFailure:noNetworkConnection");
                         mMoviesView.showNoNetworkConnection();
                     }
                 }
@@ -68,6 +74,7 @@ public class MovieSearchPresenter implements MovieSearchContract.Presenter {
     }
 
     public boolean isFavoriteMovie(MovieModel movieSelected, ArrayList<MovieModel> favoriteMovies) {
+        if (favoriteMovies == null) return false;
         int movieId = movieSelected.getMovieId();
         for (int i = 0; i < favoriteMovies.size(); i++) {
             if (movieId == favoriteMovies.get(i).getMovieId()) {
@@ -84,10 +91,5 @@ public class MovieSearchPresenter implements MovieSearchContract.Presenter {
                 (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnectedOrConnecting();
-    }
-
-    @Override
-    public void moviePosterItemClicked(int position) {
-
     }
 }

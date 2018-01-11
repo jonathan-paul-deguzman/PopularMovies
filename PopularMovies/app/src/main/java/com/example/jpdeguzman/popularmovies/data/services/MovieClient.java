@@ -1,6 +1,5 @@
-package com.example.jpdeguzman.popularmovies.Clients;
+package com.example.jpdeguzman.popularmovies.data.services;
 
-import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import retrofit2.Retrofit;

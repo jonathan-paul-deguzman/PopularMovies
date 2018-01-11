@@ -1,4 +1,4 @@
-package com.example.jpdeguzman.popularmovies.Models;
+package com.example.jpdeguzman.popularmovies.data.models;
 
 /**
  * Created by jpdeguzman on 1/1/18.

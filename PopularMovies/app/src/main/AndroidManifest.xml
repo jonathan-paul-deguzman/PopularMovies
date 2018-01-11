@@ -25,18 +25,14 @@
 
         </activity>
         <activity android:name=".MainActivity"
-            android:screenOrientation="fullSensor"
-            android:configChanges="orientation"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:screenOrientation="fullSensor">
         </activity>
-        <activity android:name=".MovieDetailsActivity"
+        <activity android:name=".DetailsActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="fullSensor">
+        </activity>
+        <activity android:name=".moviedetails.MovieDetailsActivity"
+            android:parentActivityName=".moviesearch.MovieSearchActivity">
         </activity>
         <provider
             android:authorities="com.example.jpdeguzman.popularmovies"

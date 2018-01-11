@@ -75,6 +75,6 @@ public class MainActivityTest {
         onView(withId(R.id.rv_movie_posters))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
-        intended(allOf(hasComponent(MovieDetailsActivity.class.getSimpleName())));
+        intended(allOf(hasComponent(DetailsActivity.class.getSimpleName())));
     }
 }

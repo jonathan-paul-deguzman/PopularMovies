@@ -1,4 +1,4 @@
-package com.example.jpdeguzman.popularmovies.Adapters;
+package com.example.jpdeguzman.popularmovies.data.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,13 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.jpdeguzman.popularmovies.Holders.MovieDetailsViewHolder;
-import com.example.jpdeguzman.popularmovies.Holders.MovieReviewsViewHolder;
-import com.example.jpdeguzman.popularmovies.Holders.MovieVideosViewHolder;
-import com.example.jpdeguzman.popularmovies.Models.MovieModel;
-import com.example.jpdeguzman.popularmovies.Models.ReviewModel;
-import com.example.jpdeguzman.popularmovies.Models.VideoModel;
+import com.example.jpdeguzman.popularmovies.data.holders.MovieDetailsViewHolder;
+import com.example.jpdeguzman.popularmovies.data.holders.MovieReviewsViewHolder;
+import com.example.jpdeguzman.popularmovies.data.holders.MovieVideosViewHolder;
+import com.example.jpdeguzman.popularmovies.data.models.MovieModel;
+import com.example.jpdeguzman.popularmovies.data.models.ReviewModel;
+import com.example.jpdeguzman.popularmovies.data.models.VideoModel;
 import com.example.jpdeguzman.popularmovies.R;
+import com.example.jpdeguzman.popularmovies.utils.ApplicationContext;
 
 import java.util.ArrayList;
 
@@ -35,9 +36,9 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private ArrayList<ReviewModel> reviewItemList;
 
-    public MovieDetailsAdapter(Context context, ArrayList<MovieModel> detailItemList,
-                               ArrayList<VideoModel> videoItemList, ArrayList<ReviewModel> reviewItemList) {
-        this.context = context;
+    public MovieDetailsAdapter(ArrayList<MovieModel> detailItemList, ArrayList<VideoModel>
+            videoItemList, ArrayList<ReviewModel> reviewItemList) {
+        this.context = ApplicationContext.getContext();
         this.detailItemList = detailItemList;
         this.videoItemList = videoItemList;
         this.reviewItemList = reviewItemList;

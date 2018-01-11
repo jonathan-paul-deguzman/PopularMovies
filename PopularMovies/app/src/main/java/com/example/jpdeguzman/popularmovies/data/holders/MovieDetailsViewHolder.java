@@ -1,4 +1,4 @@
-package com.example.jpdeguzman.popularmovies.Holders;
+package com.example.jpdeguzman.popularmovies.data.holders;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,10 +9,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jpdeguzman.popularmovies.Adapters.FavoriteMovieAdapter;
+import com.example.jpdeguzman.popularmovies.data.adapters.FavoriteMovieAdapter;
 import com.example.jpdeguzman.popularmovies.Constants.Images;
 import com.example.jpdeguzman.popularmovies.data.database.FavoriteMovieContract;
-import com.example.jpdeguzman.popularmovies.Models.MovieModel;
+import com.example.jpdeguzman.popularmovies.data.models.MovieModel;
 import com.example.jpdeguzman.popularmovies.R;
 import com.squareup.picasso.Picasso;
 

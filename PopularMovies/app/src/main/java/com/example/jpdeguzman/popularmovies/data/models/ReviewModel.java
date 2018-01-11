@@ -1,4 +1,4 @@
-package com.example.jpdeguzman.popularmovies.Models;
+package com.example.jpdeguzman.popularmovies.data.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

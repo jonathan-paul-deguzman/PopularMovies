@@ -1,10 +1,10 @@
-package com.example.jpdeguzman.popularmovies.Holders;
+package com.example.jpdeguzman.popularmovies.data.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.jpdeguzman.popularmovies.Models.ReviewModel;
+import com.example.jpdeguzman.popularmovies.data.models.ReviewModel;
 import com.example.jpdeguzman.popularmovies.R;
 
 import java.util.ArrayList;

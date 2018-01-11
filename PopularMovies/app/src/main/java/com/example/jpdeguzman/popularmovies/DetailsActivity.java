@@ -8,17 +8,17 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.example.jpdeguzman.popularmovies.Adapters.MovieDetailsAdapter;
-import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
+import com.example.jpdeguzman.popularmovies.data.adapters.MovieDetailsAdapter;
+import com.example.jpdeguzman.popularmovies.data.services.MovieClient;
 import com.example.jpdeguzman.popularmovies.Constants.MovieDetails;
 import com.example.jpdeguzman.popularmovies.Constants.Movies;
-import com.example.jpdeguzman.popularmovies.Models.MovieModel;
-import com.example.jpdeguzman.popularmovies.Models.ReviewModel;
-import com.example.jpdeguzman.popularmovies.Models.ReviewResultsModel;
-import com.example.jpdeguzman.popularmovies.Models.VideoModel;
-import com.example.jpdeguzman.popularmovies.Models.VideoResultsModel;
-import com.example.jpdeguzman.popularmovies.Models.VideosAndReviewsModel;
-import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
+import com.example.jpdeguzman.popularmovies.data.models.MovieModel;
+import com.example.jpdeguzman.popularmovies.data.models.ReviewModel;
+import com.example.jpdeguzman.popularmovies.data.models.ReviewResultsModel;
+import com.example.jpdeguzman.popularmovies.data.models.VideoModel;
+import com.example.jpdeguzman.popularmovies.data.models.VideoResultsModel;
+import com.example.jpdeguzman.popularmovies.data.models.VideosAndReviewsModel;
+import com.example.jpdeguzman.popularmovies.data.services.MovieDetailsService;
 
 import java.util.ArrayList;
 
@@ -32,9 +32,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
 
-public class MovieDetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity {
 
-    private static final String TAG = MovieDetailsActivity.class.getSimpleName();
+    private static final String TAG = DetailsActivity.class.getSimpleName();
 
     @BindView(R.id.rv_movie_details) RecyclerView mRecyclerViewMovieDetails;
 
@@ -134,6 +134,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private void bindDataToAdapter(ArrayList<MovieModel> detailsList,
                                    ArrayList<VideoModel> videoList, ArrayList<ReviewModel> reviewList) {
         mRecyclerViewMovieDetails.setAdapter(
-                new MovieDetailsAdapter(this, detailsList, videoList, reviewList));
+                new MovieDetailsAdapter(detailsList, videoList, reviewList));
     }
 }

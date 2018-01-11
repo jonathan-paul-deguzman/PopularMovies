@@ -1,8 +1,8 @@
-package com.example.jpdeguzman.popularmovies.Services;
+package com.example.jpdeguzman.popularmovies.data.services;
 
-import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
-import com.example.jpdeguzman.popularmovies.Models.ReviewResultsModel;
-import com.example.jpdeguzman.popularmovies.Models.VideoResultsModel;
+import com.example.jpdeguzman.popularmovies.data.models.MovieResultsModel;
+import com.example.jpdeguzman.popularmovies.data.models.ReviewResultsModel;
+import com.example.jpdeguzman.popularmovies.data.models.VideoResultsModel;
 
 import io.reactivex.Observable;
 import retrofit2.Call;

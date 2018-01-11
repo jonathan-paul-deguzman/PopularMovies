@@ -1,4 +1,4 @@
-package com.example.jpdeguzman.popularmovies.Holders;
+package com.example.jpdeguzman.popularmovies.data.holders;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jpdeguzman.popularmovies.Models.VideoModel;
+import com.example.jpdeguzman.popularmovies.data.models.VideoModel;
 import com.example.jpdeguzman.popularmovies.R;
 import com.squareup.picasso.Picasso;
 

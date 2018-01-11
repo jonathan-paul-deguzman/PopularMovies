@@ -1,8 +1,6 @@
 package com.example.jpdeguzman.popularmovies.moviesearch;
 
-import com.example.jpdeguzman.popularmovies.BasePresenter;
-import com.example.jpdeguzman.popularmovies.BaseView;
-import com.example.jpdeguzman.popularmovies.Models.MovieModel;
+import com.example.jpdeguzman.popularmovies.data.models.MovieModel;
 
 import java.util.ArrayList;
 
@@ -27,12 +25,14 @@ public interface MovieSearchContract {
 
     interface Presenter {
 
-        void loadMovies(MovieSearchType movieType);
+        void launchMovieDetailsIntent(MovieModel selectedMovie);
+
+        void loadMovies(String movieType);
 
         void loadFavoriteMovies(ArrayList<MovieModel> favoriteMovies);
 
-        boolean isNetworkAvailable();
+        boolean isFavoriteMovie(MovieModel movieSelected, ArrayList<MovieModel> favoriteMovies);
 
-        void moviePosterItemClicked(int position);
+        boolean isNetworkAvailable();
     }
 }

@@ -22,14 +22,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.example.jpdeguzman.popularmovies.Adapters.FavoriteMovieAdapter;
-import com.example.jpdeguzman.popularmovies.Adapters.MovieAdapter;
-import com.example.jpdeguzman.popularmovies.Clients.MovieClient;
+import com.example.jpdeguzman.popularmovies.data.adapters.FavoriteMovieAdapter;
+import com.example.jpdeguzman.popularmovies.data.adapters.MovieAdapter;
+import com.example.jpdeguzman.popularmovies.data.services.MovieClient;
 import com.example.jpdeguzman.popularmovies.Constants.Movies;
 import com.example.jpdeguzman.popularmovies.data.database.FavoriteMovieContract;
-import com.example.jpdeguzman.popularmovies.Models.MovieModel;
-import com.example.jpdeguzman.popularmovies.Models.MovieResultsModel;
-import com.example.jpdeguzman.popularmovies.Services.MovieDetailsService;
+import com.example.jpdeguzman.popularmovies.data.models.MovieModel;
+import com.example.jpdeguzman.popularmovies.data.models.MovieResultsModel;
+import com.example.jpdeguzman.popularmovies.data.services.MovieDetailsService;
 
 import java.util.ArrayList;
 
@@ -182,14 +182,26 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
     }
 
-    /**
-     * Override OnItemClick from MovieAdapterOnClickHandler defined in MovieAdapter
-     *
-     * @param position the item that was selected from the recycler view
-     */
+//    /**
+//     * Override OnItemClick from MovieAdapterOnClickHandler defined in MovieAdapter
+//     *
+//     * @param position the item that was selected from the recycler view
+//     */
+//    @Override
+//    public void OnItemClick(int position) {
+//        MovieModel movieSelected = mMovieResultsList.get(position);
+//        int movieId = movieSelected.getMovieId();
+//        for (int i = 0; i < mFavoriteMoviesList.size(); i++) {
+//            if (movieId == mFavoriteMoviesList.get(i).getMovieId()) {
+//                movieSelected.setFavorite(true);
+//            }
+//        }
+//        launchMovieDetailsIntent(movieSelected);
+//    }
+
     @Override
-    public void OnItemClick(int position) {
-        MovieModel movieSelected = mMovieResultsList.get(position);
+    public void OnItemClick(MovieModel movieSelected) {
+        //MovieModel movieSelected = mMovieResultsList.get(position);
         int movieId = movieSelected.getMovieId();
         for (int i = 0; i < mFavoriteMoviesList.size(); i++) {
             if (movieId == mFavoriteMoviesList.get(i).getMovieId()) {
@@ -213,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     private void launchMovieDetailsIntent(MovieModel movieSelected) {
-        Intent movieDetailsIntent = new Intent(MainActivity.this, MovieDetailsActivity.class);
+        Intent movieDetailsIntent = new Intent(MainActivity.this, DetailsActivity.class);
         movieDetailsIntent.putExtra(Movies.MOVIE_EXTRA, movieSelected);
         startActivity(movieDetailsIntent);
     }

@@ -4,22 +4,26 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.example.jpdeguzman.popularmovies.Models.MovieModel;
+import com.example.jpdeguzman.popularmovies.data.models.MovieModel;
 import com.example.jpdeguzman.popularmovies.data.database.FavoriteMovieContract.FavoriteMovieEntry;
 import com.example.jpdeguzman.popularmovies.utils.ApplicationContext;
 
 import java.util.ArrayList;
 
 /**
- * Created by jpdeguzman on 1/6/18.
+ * Loads the data from the Content Provider for display in MovieSearchFragment
  */
-
 public class FavoriteMovieLoader extends AsyncTaskLoader<ArrayList<MovieModel>> {
 
     public FavoriteMovieLoader(Context context) {
         super(context);
     }
 
+    /**
+     * Queries for favorite movies in the background thread
+     *
+     * @return an ArrayList of favorite movies
+     */
     @Override
     public ArrayList<MovieModel> loadInBackground() {
         try {
@@ -37,6 +41,12 @@ public class FavoriteMovieLoader extends AsyncTaskLoader<ArrayList<MovieModel>> 
         }
     }
 
+    /**
+     * Uses a cursor to convert database column values into a MovieModel object
+     *
+     * @param cursor a row representing a favorite movie in the favorites database
+     * @return a MovieModel object consisting of values from the cursor
+     */
     private MovieModel populateMovieUsingCursor(Cursor cursor) {
         int movieIdIndex =
                 cursor.getInt(cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_MOVIE_ID));
