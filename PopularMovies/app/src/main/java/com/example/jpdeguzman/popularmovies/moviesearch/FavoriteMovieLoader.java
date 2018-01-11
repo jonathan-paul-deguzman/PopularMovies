@@ -67,7 +67,7 @@ public class FavoriteMovieLoader extends AsyncTaskLoader<ArrayList<MovieModel>> 
     }
 
     private ArrayList<MovieModel> getMoviesFromCursor(Cursor cursor) {
-        ArrayList<MovieModel> favoriteMovieList = null;
+        ArrayList<MovieModel> favoriteMovieList = new ArrayList<>();
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             MovieModel favoriteMovie = populateMovieUsingCursor(cursor);
             favoriteMovieList.add(favoriteMovie);

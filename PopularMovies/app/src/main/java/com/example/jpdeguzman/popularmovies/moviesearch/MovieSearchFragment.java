@@ -40,6 +40,8 @@ public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieA
 
     private MovieSearchContract.Presenter mPresenter;
 
+    private FavoriteMovieAdapter mFavoriteMovieAdapter = null;
+
     private String mCurrentSearchType;
 
     private int mCurrentScrollPosition;
@@ -59,7 +61,6 @@ public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieA
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mPresenter = new MovieSearchPresenter(this);
-        getLoaderManager().initLoader(MovieConstants.FAVORITE_MOVIE_LOADER_ID, null, this).forceLoad();
     }
 
     @Nullable
@@ -68,21 +69,29 @@ public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieA
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movie_search, container, false);
         ButterKnife.bind(this, view);
-        GridLayoutManager layoutManager =
-                new GridLayoutManager(getContext(), MovieConstants.MOVIE_POSTERS_DEFAULT_COLUMNS);
-        mMoviePostersRecyclerView.setLayoutManager(layoutManager);
+
+        // Set up initial view for movie posters with the movie search type as popular
+        mMoviePostersRecyclerView.setLayoutManager(
+                new GridLayoutManager(getContext(), MovieConstants.MOVIE_POSTERS_DEFAULT_COLUMNS));
+        mPresenter.loadMovies(MovieConstants.MOVIE_TYPE_POPULAR_KEY);
+
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        getLoaderManager().initLoader(MovieConstants.FAVORITE_MOVIE_LOADER_ID, null, this).forceLoad();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mCurrentScrollPosition = preferences.getInt(MovieConstants.MOVIE_POSTERS_SCROLL_POSITION_KEY, 0);
         mCurrentScrollOffset = preferences.getInt(MovieConstants.MOVIE_POSTERS_SCROLL_OFFSET_KEY, 0);
         String savedMovieType = preferences.getString(
                 MovieConstants.MOVIE_TYPE_SAVED_KEY, MovieConstants.MOVIE_TYPE_POPULAR_KEY);
-        mPresenter.loadMovies(savedMovieType);
+        if (savedMovieType.equals(MovieConstants.MOVIE_TYPE_FAVORITE_KEY)) {
+            mPresenter.loadFavoriteMovies(mFavoriteMoviesList);
+        } else {
+            mPresenter.loadMovies(savedMovieType);
+        }
     }
 
     @Override
@@ -91,7 +100,8 @@ public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieA
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         View firstChildInView = mMoviePostersRecyclerView.getChildAt(0);
         int currentScrollPosition = mMoviePostersRecyclerView.getChildAdapterPosition(firstChildInView);
-        int currentScrollOffset = firstChildInView.getTop();
+        int currentScrollOffset = 0;
+        if (firstChildInView != null) currentScrollOffset = firstChildInView.getTop();
         preferences.edit()
                 .putInt(MovieConstants.MOVIE_POSTERS_SCROLL_POSITION_KEY, currentScrollPosition)
                 .putInt(MovieConstants.MOVIE_POSTERS_SCROLL_OFFSET_KEY, currentScrollOffset)
@@ -133,8 +143,8 @@ public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieA
 
     @Override
     public void showFavoriteMovies(ArrayList<MovieModel> favoriteMovieList) {
-        FavoriteMovieAdapter adapter = new FavoriteMovieAdapter(favoriteMovieList, this);
-        mMoviePostersRecyclerView.setAdapter(adapter);
+        mFavoriteMovieAdapter = new FavoriteMovieAdapter(favoriteMovieList, this);
+        mMoviePostersRecyclerView.setAdapter(mFavoriteMovieAdapter);
         mMoviePostersRecyclerView.scrollToPosition(mCurrentScrollPosition);
         mMoviePostersRecyclerView.scrollBy(0, - mCurrentScrollOffset);
     }
@@ -182,7 +192,9 @@ public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieA
 
     @Override
     public void onLoadFinished(Loader<ArrayList<MovieModel>> loader, ArrayList<MovieModel> data) {
-        mFavoriteMoviesList = data;
+        mFavoriteMoviesList.clear();
+        mFavoriteMoviesList.addAll(data);
+        mFavoriteMovieAdapter.notifyDataSetChanged();
     }
 
     @Override

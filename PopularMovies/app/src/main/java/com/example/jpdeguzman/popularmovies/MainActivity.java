@@ -211,15 +211,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         launchMovieDetailsIntent(movieSelected);
     }
 
-    /**
-     * Override OnFavoriteItemClick from FavoriteMovieAdapterOnClickHandler defined in
-     * FavoriteMovieAdapter
-     *
-     * @param position the item that was selected from the recycler view
-     */
+//    /**
+//     * Override OnFavoriteItemClick from FavoriteMovieAdapterOnClickHandler defined in
+//     * FavoriteMovieAdapter
+//     *
+//     * @param position the item that was selected from the recycler view
+//     */
     @Override
-    public void OnFavoriteItemClick(int position) {
-        MovieModel favoriteMovieSelected = mFavoriteMoviesList.get(position);
+    public void OnFavoriteItemClick(MovieModel favoriteMovieSelected) {
         favoriteMovieSelected.setFavorite(true);
         launchMovieDetailsIntent(favoriteMovieSelected);
     }

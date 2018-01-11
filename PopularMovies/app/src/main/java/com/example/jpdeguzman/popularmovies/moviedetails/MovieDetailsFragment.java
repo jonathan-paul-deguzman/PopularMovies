@@ -1,6 +1,5 @@
 package com.example.jpdeguzman.popularmovies.moviedetails;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,7 +15,6 @@ import com.example.jpdeguzman.popularmovies.data.models.MovieModel;
 import com.example.jpdeguzman.popularmovies.data.models.ReviewModel;
 import com.example.jpdeguzman.popularmovies.data.models.VideoModel;
 import com.example.jpdeguzman.popularmovies.R;
-import com.example.jpdeguzman.popularmovies.utils.ApplicationContext;
 
 import java.util.ArrayList;
 
@@ -25,21 +23,16 @@ import butterknife.ButterKnife;
 
 public class MovieDetailsFragment extends Fragment implements MovieDetailsContract.View {
 
-    private Context mContext;
-
     private MovieDetailsContract.Presenter mDetailsPresenter;
 
     @BindView(R.id.rv_movie_details) RecyclerView mMovieDetailsRecyclerView;
 
-    public MovieDetailsFragment() {
-
-    }
+    public MovieDetailsFragment() {}
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mContext = ApplicationContext.getContext();
         mDetailsPresenter = new MovieDetailsPresenter(this);
     }
 
@@ -49,7 +42,7 @@ public class MovieDetailsFragment extends Fragment implements MovieDetailsContra
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movie_details, container, false);
         ButterKnife.bind(this, view);
-        mMovieDetailsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        mMovieDetailsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         Bundle data = getActivity().getIntent().getExtras();
         MovieModel movieDetails = data.getParcelable(MovieConstants.MOVIE_EXTRA);
