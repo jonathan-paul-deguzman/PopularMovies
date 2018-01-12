@@ -9,6 +9,7 @@
         android:id="@+id/iv_movie_backdrop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:scaleType="fitXY"
         android:adjustViewBounds="true"
         android:contentDescription="@string/description_movie_backdrop"
         app:layout_constraintLeft_toLeftOf="parent"
