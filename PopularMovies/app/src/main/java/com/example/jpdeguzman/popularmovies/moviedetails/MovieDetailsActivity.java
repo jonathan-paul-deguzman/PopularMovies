@@ -8,7 +8,7 @@ import android.view.MenuItem;
 import com.example.jpdeguzman.popularmovies.R;
 
 /**
- * Created by jpdeguzman on 1/9/18.
+ * Responsible for creating the fragment and managing the activity lifecycle of the view
  */
 public class MovieDetailsActivity extends AppCompatActivity {
     @Override

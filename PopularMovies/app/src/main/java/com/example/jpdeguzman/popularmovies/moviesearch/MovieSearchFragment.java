@@ -194,7 +194,7 @@ public class MovieSearchFragment extends Fragment implements MovieAdapter.MovieA
     public void onLoadFinished(Loader<ArrayList<MovieModel>> loader, ArrayList<MovieModel> data) {
         mFavoriteMoviesList.clear();
         mFavoriteMoviesList.addAll(data);
-        mFavoriteMovieAdapter.notifyDataSetChanged();
+        if (mFavoriteMovieAdapter != null) mFavoriteMovieAdapter.notifyDataSetChanged();
     }
 
     @Override

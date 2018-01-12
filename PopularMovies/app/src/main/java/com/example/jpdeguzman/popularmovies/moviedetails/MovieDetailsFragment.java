@@ -43,12 +43,15 @@ public class MovieDetailsFragment extends Fragment implements MovieDetailsContra
         View view = inflater.inflate(R.layout.fragment_movie_details, container, false);
         ButterKnife.bind(this, view);
         mMovieDetailsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        return view;
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         Bundle data = getActivity().getIntent().getExtras();
         MovieModel movieDetails = data.getParcelable(MovieConstants.MOVIE_EXTRA);
         mDetailsPresenter.getDetailsResults(movieDetails);
-
-        return view;
     }
 
     @Override

@@ -51,7 +51,7 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         switch (viewType) {
             case MOVIE_DETAILS_ID:
-                View detailsView = inflater.inflate(R.layout.movie_details, parent, false);
+                View detailsView = inflater.inflate(R.layout.movie_details_information, parent, false);
                 viewHolder = new MovieDetailsViewHolder(context, detailsView);
                 break;
             case MOVIE_VIDEOS_ID:

@@ -15,9 +15,9 @@ import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Created by jpdeguzman on 1/9/18.
+ * Responsible for interacting with {@link MovieDetailsService} to retrieve movie details data such
+ * as trailers or reviews.
  */
-
 public class LoadDetailsInteractorImpl implements LoadDetailsInteractor {
 
     @Override

@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.jpdeguzman.popularmovies.Constants.Images;
+import com.example.jpdeguzman.popularmovies.data.constants.ImageConstants;
 import com.example.jpdeguzman.popularmovies.data.models.MovieModel;
 import com.example.jpdeguzman.popularmovies.R;
 import com.example.jpdeguzman.popularmovies.utils.ApplicationContext;
@@ -43,12 +43,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     }
 
     @Override
-    public void onBindViewHolder(MovieAdapter.MovieAdapterViewHolder holder, final int position) {
+    public void onBindViewHolder(MovieAdapterViewHolder holder, final int position) {
         final MovieModel currentMovie = mMovieList.get(position);
         if (currentMovie != null) {
             String moviePosterPath = currentMovie.getMoviePosterPath();
             Picasso.with(mContext)
-                    .load(Images.IMAGE_BASE_URL + Images.IMAGE_RECOMMENDED_SIZE + moviePosterPath)
+                    .load(ImageConstants.IMAGE_BASE_URL + ImageConstants.IMAGE_RECOMMENDED_SIZE + moviePosterPath)
                     .into(holder.moviePosterImageView);
         }
 

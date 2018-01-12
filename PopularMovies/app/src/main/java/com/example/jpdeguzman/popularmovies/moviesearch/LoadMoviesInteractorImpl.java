@@ -1,7 +1,6 @@
 package com.example.jpdeguzman.popularmovies.moviesearch;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.example.jpdeguzman.popularmovies.data.constants.MovieConstants;
 import com.example.jpdeguzman.popularmovies.data.services.MovieClient;

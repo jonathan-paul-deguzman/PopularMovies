@@ -3,10 +3,6 @@ package com.example.jpdeguzman.popularmovies.utils;
 import android.app.Application;
 import android.content.Context;
 
-/**
- * Created by jpdeguzman on 1/9/18.
- */
-
 public class ApplicationContext extends Application {
 
     private static Context mContext;

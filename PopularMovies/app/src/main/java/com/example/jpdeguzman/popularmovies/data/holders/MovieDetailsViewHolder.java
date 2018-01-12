@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jpdeguzman.popularmovies.Constants.Images;
+import com.example.jpdeguzman.popularmovies.data.constants.ImageConstants;
 import com.example.jpdeguzman.popularmovies.data.database.FavoriteMovieContract;
 import com.example.jpdeguzman.popularmovies.data.models.MovieModel;
 import com.example.jpdeguzman.popularmovies.R;
@@ -56,11 +56,11 @@ public class MovieDetailsViewHolder extends RecyclerView.ViewHolder implements V
         if (currentMovieDetails != null) {
             String movieBackdropPath = currentMovieDetails.getMovieBackdropPath();
             Picasso.with(context)
-                    .load(Images.IMAGE_BASE_URL + Images.IMAGE_RECOMMENDED_SIZE + movieBackdropPath)
+                    .load(ImageConstants.IMAGE_BASE_URL + ImageConstants.IMAGE_RECOMMENDED_SIZE + movieBackdropPath)
                     .into(movieBackdropImageView);
             String moviePosterPath = currentMovieDetails.getMoviePosterPath();
             Picasso.with(context)
-                    .load(Images.IMAGE_BASE_URL + Images.IMAGE_RECOMMENDED_SIZE + moviePosterPath)
+                    .load(ImageConstants.IMAGE_BASE_URL + ImageConstants.IMAGE_RECOMMENDED_SIZE + moviePosterPath)
                     .into(moviePosterImageView);
             detailsHolder.movieTitleTextView.setText(currentMovieDetails.getMovieTitle());
             detailsHolder.movieReleaseDateTextView.setText(

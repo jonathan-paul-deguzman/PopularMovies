@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.example.jpdeguzman.popularmovies.R;
 
 /**
- * Creates the fragment and presenter.
+ * Responsible for creating the fragment and managing the activity lifecycle of the view
  */
 public class MovieSearchActivity extends AppCompatActivity {
 

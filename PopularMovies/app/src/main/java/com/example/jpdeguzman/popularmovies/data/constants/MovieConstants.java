@@ -1,9 +1,8 @@
 package com.example.jpdeguzman.popularmovies.data.constants;
 
 /**
- * Created by jpdeguzman on 1/10/18.
+ * Class to hold constants for movie related values
  */
-
 public class MovieConstants {
 
     public static final String MOVIE_EXTRA = ".MovieModel";
