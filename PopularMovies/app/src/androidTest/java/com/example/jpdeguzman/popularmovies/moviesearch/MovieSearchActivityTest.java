@@ -1,12 +1,17 @@
-package com.example.jpdeguzman.popularmovies;
+package com.example.jpdeguzman.popularmovies.moviesearch;
 
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.espresso.contrib.RecyclerViewActions;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+
+import com.example.jpdeguzman.popularmovies.R;
+import com.example.jpdeguzman.popularmovies.moviedetails.MovieDetailsActivity;
+import com.example.jpdeguzman.popularmovies.moviesearch.MovieSearchActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,21 +31,18 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 
-/**
- *  Tests {@link MainActivity} UI components
- */
 @RunWith(AndroidJUnit4.class)
-public class MainActivityTest {
+public class MovieSearchActivityTest {
 
     private Context mContext = getInstrumentation().getTargetContext();
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityTestRule<MovieSearchActivity> mActivityRule = new ActivityTestRule<>(MovieSearchActivity.class);
 
     @Test
     public void testSortByPopularMovies() {
         openActionBarOverflowOrOptionsMenu(mContext);
-        onView(withText(R.string.menu_sort_popular))
+        onView(ViewMatchers.withText(R.string.menu_sort_popular))
                 .perform(click());
 
         onView(withId(R.id.rv_movie_posters))
@@ -75,6 +77,6 @@ public class MainActivityTest {
         onView(withId(R.id.rv_movie_posters))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
-        intended(allOf(hasComponent(DetailsActivity.class.getSimpleName())));
+        intended(allOf(hasComponent(MovieDetailsActivity.class.getSimpleName())));
     }
 }

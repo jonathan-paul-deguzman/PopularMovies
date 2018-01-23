@@ -1,4 +1,4 @@
-package com.example.jpdeguzman.popularmovies.data;
+package com.example.jpdeguzman.popularmovies.data.database;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
